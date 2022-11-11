@@ -1,5 +1,7 @@
 import os
+
 import yaml
+
 
 def import_yaml(path_to_file, check_func):
     ''' 
