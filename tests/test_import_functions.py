@@ -44,6 +44,6 @@ def test_type_dicom_info():
     with raises(TypeError) as exception:
         import_yaml('type_dicom_info.yaml', check_dicom_info)
 
-def test_dir_dicom_info():
+def test_path_dicom_info():
     with raises(OSError) as exception:
-        import_yaml('dir_dicom_info.yaml', check_dicom_info)
+        import_yaml('path_dicom_info.yaml', check_dicom_info)
