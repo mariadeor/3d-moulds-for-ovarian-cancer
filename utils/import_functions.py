@@ -4,6 +4,7 @@
 # INSTITUTION   Department of Radiology, University of Cambridge
 # DATE          Nov 2022
 #####################################################################
+"""Functions for importing and checking input yaml files."""
 
 #%% -----------------LIBRARIES--------------
 import os
@@ -13,7 +14,7 @@ import yaml
 
 #%% -----------------FUNCTIONS--------------
 def import_yaml(path_to_file, check_func):
-    '''
+    """
     This function updates the global variables with those defined in a yaml
     file.
     The suitability of the variables is tested through an inputted function.
@@ -26,7 +27,7 @@ def import_yaml(path_to_file, check_func):
         OUTPUTS:
             yaml_dict <dict>:       Dictionary constructed from the input
                                     yaml file.
-    '''
+    """
 
     with open(path_to_file) as yaml_file:
         yaml_dict = yaml.safe_load(yaml_file)
@@ -37,14 +38,14 @@ def import_yaml(path_to_file, check_func):
 
 
 def check_tunable_parameters(tunable_parameters):
-    '''
+    """
     This function checks the yaml file containing the tunable parameters
     and raises errors if unsuitable.
         INPUTS:
             tunable_parameters <dict>:  Dictionary containing the tunable
                                         parameters defined in the input
                                         yaml file.
-    '''
+    """
 
     for key, item in tunable_parameters.items():  # Loop through each defined parameter
         if not item:  # Check if the parameter is empty
@@ -76,7 +77,7 @@ def check_tunable_parameters(tunable_parameters):
     ## Check if there are any missing parameters
     missing_params = [param for param in required_params if param not in set(input_params)]
     if missing_params:
-        raise KeyError('Missing: ' + ' '.join(missing_params))
+        raise KeyError("Missing: " + " ".join(missing_params))
 
     ## Check if there are any unrecognised parameters
     ## ATTN: If so, it prints a warning but it does not raise any error.
@@ -84,17 +85,17 @@ def check_tunable_parameters(tunable_parameters):
     ## raised as it would have been identified as a missing parameters above.
     unrecognised_params = [param for param in input_params if param not in set(required_params)]
     if unrecognised_params:
-        print('WARNING: Tunable parameter(s) ' + ' '.join(unrecognised_params) + ' are unrecognised and will be ignored.')
+        print("WARNING: Tunable parameter(s) " + " ".join(unrecognised_params) + " are unrecognised and will be ignored.")
 
 
 def check_dicom_info(dicom_info):
-    '''
+    """
     This function checks the yaml file containing the DICOM information
     and raises errors if unsuitable.
         INPUTS:
             dicom_info <dict>:  Dictionary containing the DICOM
                                 information from the input yaml file.
-    '''
+    """
 
     for key, item in dicom_info.items():
         if not item:  # Check if the specificity is empty
@@ -105,7 +106,7 @@ def check_dicom_info(dicom_info):
 
     # Check if path_to_dicom is an existing directory.
     if not os.path.isdir(dicom_info['path_to_dicom']):
-        raise OSError('path_to_dicom should be an existing *directory*.')
+        raise OSError("path_to_dicom should be an existing *directory*.")
 
     # Check if there are missing or unrecognised (extra) info bits:
     ## List with all the *expected* info bits:
@@ -122,7 +123,7 @@ def check_dicom_info(dicom_info):
     ## Check if there are any missing specificities
     missing_info = [info for info in required_info if info not in set(input_info)]
     if missing_info:
-        raise KeyError('Missing: ' + ' '.join(missing_info))
+        raise KeyError("Missing: " + " ".join(missing_info))
 
     ## Check if there are any unrecognised info bits
     ## ATTN: If so, it prints a warning but it does not raise any error.
@@ -130,4 +131,4 @@ def check_dicom_info(dicom_info):
     ## raised as it would have been identified as a missing info bit above.
     unrecognised_info = [info for info in input_info if info not in set(required_info)]
     if unrecognised_info:
-        print('WARNING: DICOM information bit(s) ' + ' '.join(unrecognised_info) + ' are unrecognised and will be ignored.')
+        print("WARNING: DICOM information bit(s) " + " ".join(unrecognised_info) + " are unrecognised and will be ignored.")
