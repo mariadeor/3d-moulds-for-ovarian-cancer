@@ -10,6 +10,7 @@ import os
 
 import yaml
 
+
 #%% -----------------FUNCTIONS--------------
 def import_yaml(path_to_file, check_func):
     '''
@@ -87,33 +88,46 @@ def check_tunable_parameters(tunable_parameters):
 
 
 def check_dicom_info(dicom_info):
-    ''' 
-    This function checks the yaml file containing the DICOM information and raises errors if unsuitable.
-            INPUTS:
-                dicom_info <dict>: Dictionary containing the DICOM information in the input yaml file.
     '''
+    This function checks the yaml file containing the DICOM information
+    and raises errors if unsuitable.
+        INPUTS:
+            dicom_info <dict>:  Dictionary containing the DICOM
+                                information from the input yaml file.
+    '''
+
     for key, item in dicom_info.items():
-        if not item: # Check if the specificity is empty
+        if not item:  # Check if the specificity is empty
             raise ValueError(key + " is empty.")
-            
-        elif type(item) != str: # Check the specificity type
-            raise TypeError(key + " is <" + type(item).__name__ +  "> and should be *<str>*")
-        
-    if not os.path.isdir(dicom_info['path_to_dicom']): # Check if path_to_dicom is an existing directory.
+
+        elif type(item) != str:  # Check the specificity type
+            raise TypeError(key + " is <" + type(item).__name__ + "> and should be *<str>*")
+
+    # Check if path_to_dicom is an existing directory.
+    if not os.path.isdir(dicom_info['path_to_dicom']):
         raise OSError('path_to_dicom should be an existing *directory*.')
-        
-    # Check if there are missing or unrecognised (extra) specificities:
-    required_specs = ['path_to_dicom',
-                     'tumour_roi_name', 'base_roi_name', 'ref_point_1_roi_name', 'ref_point_2_roi_name']
-    input_specs = dicom_info.keys()
-    
+
+    # Check if there are missing or unrecognised (extra) info bits:
+    ## List with all the *expected* info bits:
+    required_info = [
+                        'path_to_dicom',
+                        'tumour_roi_name',
+                        'base_roi_name',
+                        'ref_point_1_roi_name',
+                        'ref_point_2_roi_name'
+                        ]
+    ## List with all the the *inputted* info bits:
+    input_info = dicom_info.keys()
+
     ## Check if there are any missing specificities
-    missing_specs = [spec for spec in required_specs if spec not in set(input_specs)]
-    if missing_specs:
-        raise KeyError('Missing: ' + ' '.join(missing_specs))
-    
-    ## Check if there are any unrecognised specificities 
-    ## ATTN: If so, it prints a warning but it does not raise any error. In case this specificity had a typo, an error would have already been rised during the missing specificities check
-    unrecognised_specs = [spec for spec in input_specs if spec not in set(required_specs)]
-    if unrecognised_specs:
-        print('WARNING: Tunable parameter(s) ' + ' '.join(unrecognised_specs) + ' are unrecognised and will be ignored.')
+    missing_info = [info for info in required_info if info not in set(input_info)]
+    if missing_info:
+        raise KeyError('Missing: ' + ' '.join(missing_info))
+
+    ## Check if there are any unrecognised info bits
+    ## ATTN: If so, it prints a warning but it does not raise any error.
+    ## In case a info bit had a typo, an error would have already been
+    ## raised as it would have been identified as a missing info bit above.
+    unrecognised_info = [info for info in input_info if info not in set(required_info)]
+    if unrecognised_info:
+        print('WARNING: DICOM information bit(s) ' + ' '.join(unrecognised_info) + ' are unrecognised and will be ignored.')
