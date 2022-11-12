@@ -86,7 +86,7 @@ def check_tunable_parameters(tunable_parameters):
         print('WARNING: Tunable parameter(s) ' + ' '.join(unrecognised_params) + ' are unrecognised and will be ignored.')
 
 
-def check_case_specificities(case_specificities):
+def check_dicom_info(dicom_info):
     ''' 
     This function checks the yaml file containing the case specificities and raises errors if unsuitable.
             INPUTS:
