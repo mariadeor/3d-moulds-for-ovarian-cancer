@@ -12,6 +12,7 @@ sys.path.append('../') #  Adding the parent directory to PYTHONPATH so modules f
 
 from utils.import_functions import *
 from pytest import raises
+import os
 
 
 #%% -----------------FUNCTIONS--------------
@@ -42,3 +43,7 @@ def test_empty_dicom_info():
 def test_type_dicom_info():
     with raises(TypeError) as exception:
         import_yaml('type_dicom_info.yaml', check_dicom_info)
+
+def test_dir_dicom_info():
+    with raises(OSError) as exception:
+        import_yaml('dir_dicom_info.yaml', check_dicom_info)
