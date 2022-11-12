@@ -53,3 +53,7 @@ def test_missing_dicom_info():
     with raises(KeyError) as exception:
         import_yaml('missing_dicom_info.yaml', check_dicom_info)
     os.rmdir('tmp_path')
+
+def test_typo_dicom_info():
+    with raises(KeyError) as exception:
+        import_yaml('typo_tunable_parameters.yaml', check_tunable_parameters)
