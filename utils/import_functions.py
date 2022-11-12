@@ -102,7 +102,7 @@ def check_dicom_info(dicom_info):
             raise ValueError(key + " is empty.")
 
         elif type(item) != str:  # Check the specificity type
-            raise TypeError(key + " is <" + type(item).__name__ + "> and should be *<str>*")
+            raise TypeError(key + " is <" + type(item).__name__ + "> and should be *<str>*. Adding quotes to " + key + " may resolve this issue.")
 
     # Check if path_to_dicom is an existing directory.
     if not os.path.isdir(dicom_info['path_to_dicom']):
