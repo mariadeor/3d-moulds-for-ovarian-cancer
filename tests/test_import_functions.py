@@ -38,3 +38,7 @@ def test_typo_tunable_parameters():
 def test_empty_dicom_info():
     with raises(ValueError) as exception:
         import_yaml('empty_dicom_info.yaml', check_dicom_info)
+
+def test_type_dicom_info():
+    with raises(TypeError) as exception:
+        import_yaml('type_dicom_info.yaml', check_dicom_info)
