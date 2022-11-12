@@ -5,7 +5,7 @@
 # DATE          Nov 2022
 #####################################################################
 
-# This is a test file for checking negative type tunable parameters: dist_orguide_baseplate has been set negative.
+# This is a test file for checking negative tunable parameters: dist_orguide_baseplate has been set negative.
 # TODO: The parameters appear in the same order as they do in Figure X in the manuscript "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study" (2022) by Delgado-Ortet*, Reinius* et al.
 
 slice_thickness:        5   # [mm]      # Slice thickness                                                           # DEFAULT: 5
