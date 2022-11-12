@@ -82,7 +82,7 @@ def check_tunable_parameters(tunable_parameters):
     ## Check if there are any unrecognised parameters
     ## ATTN: If so, it prints a warning but it does not raise any error.
     ## In case a parameter had a typo, an error would have already been
-    ## raised as it would have been identified as a missing parameters above.
+    ## raised as it would have been identified as a missing parameter above.
     unrecognised_params = [param for param in input_params if param not in set(required_params)]
     if unrecognised_params:
         print("WARNING: Tunable parameter(s) " + " ".join(unrecognised_params) + " are unrecognised and will be ignored.")
@@ -127,7 +127,7 @@ def check_dicom_info(dicom_info):
 
     ## Check if there are any unrecognised info bits
     ## ATTN: If so, it prints a warning but it does not raise any error.
-    ## In case a info bit had a typo, an error would have already been
+    ## In case an info bit had a typo, an error would have already been
     ## raised as it would have been identified as a missing info bit above.
     unrecognised_info = [info for info in input_info if info not in set(required_info)]
     if unrecognised_info:
