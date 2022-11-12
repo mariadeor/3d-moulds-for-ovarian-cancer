@@ -30,3 +30,7 @@ def test_negative_tunable_parameters():
 def test_missing_tunable_parameters():
     with raises(KeyError) as exception:
         import_yaml('missing_tunable_parameters.yaml', check_tunable_parameters)
+
+def test_typo_tunable_parameters():
+    with raises(KeyError) as exception:
+        import_yaml('typo_tunable_parameters.yaml', check_tunable_parameters)
