@@ -88,24 +88,24 @@ def check_tunable_parameters(tunable_parameters):
 
 def check_dicom_info(dicom_info):
     ''' 
-    This function checks the yaml file containing the case specificities and raises errors if unsuitable.
+    This function checks the yaml file containing the DICOM information and raises errors if unsuitable.
             INPUTS:
-                case_specificities <dict>: Dictionary containing the case specificities defined in the input yaml file.
+                dicom_info <dict>: Dictionary containing the DICOM information in the input yaml file.
     '''
-    for key, item in case_specificities.items():
+    for key, item in dicom_info.items():
         if not item: # Check if the specificity is empty
             raise ValueError(key + " is empty.")
             
         elif type(item) != str: # Check the specificity type
             raise TypeError(key + " is <" + type(item).__name__ +  "> and should be *<str>*")
         
-    if not os.path.isdir(case_specificities['path_to_dicom']): # Check if path_to_dicom is an existing directory.
+    if not os.path.isdir(dicom_info['path_to_dicom']): # Check if path_to_dicom is an existing directory.
         raise OSError('path_to_dicom should be an existing *directory*.')
         
     # Check if there are missing or unrecognised (extra) specificities:
     required_specs = ['path_to_dicom',
                      'tumour_roi_name', 'base_roi_name', 'ref_point_1_roi_name', 'ref_point_2_roi_name']
-    input_specs = case_specificities.keys()
+    input_specs = dicom_info.keys()
     
     ## Check if there are any missing specificities
     missing_specs = [spec for spec in required_specs if spec not in set(input_specs)]
