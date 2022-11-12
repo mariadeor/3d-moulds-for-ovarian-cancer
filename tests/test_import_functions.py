@@ -8,11 +8,13 @@
 
 #%% -----------------LIBRARIES--------------
 import sys
+
 sys.path.append('../') #  Adding the parent directory to PYTHONPATH so modules from subfolder utils can be imported.
 
-from utils.import_functions import *
-from pytest import raises
 import os
+
+from pytest import raises
+from utils.import_functions import *
 
 
 #%% -----------------FUNCTIONS--------------
