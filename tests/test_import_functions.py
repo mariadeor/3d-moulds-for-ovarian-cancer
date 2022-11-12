@@ -47,3 +47,9 @@ def test_type_dicom_info():
 def test_path_dicom_info():
     with raises(OSError) as exception:
         import_yaml('path_dicom_info.yaml', check_dicom_info)
+
+def missing_dicom_info():
+    os.mkdir('tmp_path') #  To prevent OSError to be raised.
+    with raises(KeyError) as exception:
+        import_yaml('missing_dicom_info.yaml', check_dicom_info)
+    os.rmdir('tmp_path')
