@@ -18,3 +18,7 @@ from pytest import raises
 def test_empty_tunable_parameters():
     with raises(ValueError) as exception:
         import_yaml('empty_tunable_parameters.yaml', check_tunable_parameters)
+
+def test_type_tunable_parameters():
+    with raises(TypeError) as exception:
+        import_yaml('type_tunable_parameters.yaml', check_tunable_parameters)
