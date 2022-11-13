@@ -8,11 +8,13 @@
 from their ROIs."""
 
 #%% -----------------LIBRARIES--------------
-import numpy as np
 import os
+
+import numpy as np
 import pydicom
-from rt_utils import RTStructBuilder
 import scipy.ndimage
+from rt_utils import RTStructBuilder
+
 
 #%% -----------------FUNCTIONS--------------
 def get_roi_masks(case_specificities_dict):
