@@ -69,3 +69,24 @@ if __name__ == '__main__':
     print(" OK")
 
     print("Import complete.")
+    
+    
+    #%% ----------------------------------------
+    # 2. RE-SLICING
+    # ------------------------------------------
+    print("# ------------------------------------------ \n# 2. RE-SLICING \n# ------------------------------------------")
+    print("\t## Re-slicing VOIs to voxel size (1, 1, 1) mm...", end = "")
+    ds = pydicom.dcmread(os.path.join(dicom_info_dict['path_to_dicom'], os.listdir(dicom_info_dict['path_to_dicom'])[1]))
+    scale_x = ds.PixelSpacing[0]
+    scale_y = ds.PixelSpacing[1]
+    scale_z = ds.SliceThickness
+
+    tumour_mask      = reslice(tumour_mask, scale_x, scale_y, scale_z)
+    base_mask        = reslice(base_mask, scale_x, scale_y, scale_z)
+    ref_point_1_mask = reslice(ref_point_1_mask, scale_x, scale_y, scale_z)
+    ref_point_2_mask = reslice(ref_point_2_mask, scale_x, scale_y, scale_z)
+    print(" OK")
+    print("\t\tOriginal voxel size: (%f, %f, %f) mm" % (scale_x, scale_y, scale_z))
+
+
+    print("Re-slicing complete.")
