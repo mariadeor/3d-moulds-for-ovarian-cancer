@@ -21,6 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('--tunable_parameters', type = str, default = 'tunable_parameters.yaml')
     parser.add_argument('--dicom_info', type = str, default = 'dicom_info.yaml')
     parser.add_argument('--results_path', type = str, default = 'results', help = "Path to the folder where to save the results. A subfolder under the mould_id name will be created.")
+    parser.add_argument('--display_bool', type = bool, default = False)
     
     args = parser.parse_args()
         
@@ -90,3 +91,66 @@ if __name__ == '__main__':
 
 
     print("Re-slicing complete.")
+    
+    #%% ----------------------------------------
+    # 2. ROTATION
+    # ------------------------------------------
+    # Create a label mask with all the ROIs
+    scan_sz = np.shape(tumour_mask)
+
+    rois_combined                    = np.zeros(scan_sz)
+    rois_combined[base_mask]         = 3
+    rois_combined[ref_point_1_mask]  = 2
+    rois_combined[ref_point_2_mask]  = 4
+    rois_combined[tumour_mask]       = 1
+
+    tumour_slices = np.unique(np.argwhere(tumour_mask)[:,2])
+    nbr_tumour_slices = len(tumour_slices)
+
+    if args.display_bool: # OPT: Display rois_combined
+        print("Displaying imported VOIs...")
+        for z in tumour_slices: # z goes from caudal to cranial
+            curr_rois_combined_slice = rois_combined[:, :, z]
+
+            plt.matshow(curr_rois_combined_slice)
+            plt.axis('off')
+            plt.title("Imported and re-sliced VOIs \nSlice " + str(z))
+
+    print("# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------")
+    # Find the rotation angle on the xy plane
+    dx      = get_centroid(ref_point_1_mask)[1] - get_centroid(ref_point_2_mask)[1]
+    dy      = get_centroid(ref_point_1_mask)[0] - get_centroid(ref_point_2_mask)[0]
+    theta   = math.atan(dy/dx) * 180 / math.pi
+
+    # Rotate each slice theta degrees
+    print("\t## Rotating the tumour VOI %f degrees on the DICOM axial plane..." % theta, end = "")
+    rois_combined_rotated   = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
+    for idx, z in enumerate(tumour_slices):
+      rois_combined_rotated[:, :, idx] = scipy.ndimage.rotate(rois_combined[:, :, z], theta, reshape=False, order=0)
+    print(" OK")
+
+    # In case the rotation left the base on top, let's add 180 degrees extra
+    if get_centroid(rois_combined_rotated, 1)[0] > get_centroid(rois_combined_rotated, 3)[0]:
+        print("\t## Rotating the the tumour VOI extra 180 degrees on the DICOM axial plane...", end = "")
+        for z in range(nbr_tumour_slices):
+            rois_combined_rotated[:, :, z] = scipy.ndimage.rotate(rois_combined_rotated[:, :, z], 180, reshape=False, order=0)
+        print(" OK")
+
+    if args.display_bool: # OPT: Display rois_combined_rotated and habitats_rotated
+        for z in range(nbr_tumour_slices):
+            print("\t\tDisplaying rotated VOIs...")
+            curr_rois_combined_slice = rois_combined_rotated[:, :, z]
+
+            plt.matshow(curr_rois_combined_slice)
+            plt.axis('off')
+            plt.title("Rotated VOIs \nSlice " + str(z))
+
+    # Keep only the tumour VOI
+    tumour_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
+    tumour_rotated[rois_combined_rotated == 1] = 1
+
+    # Crop the scan to the tumour VOI bounding box for increased computational speed
+    rmin, rmax, cmin, cmax, zmin, zmax = get_box(tumour_rotated)
+    tumour_rotated = tumour_rotated[rmin:rmax, cmin:cmax, zmin:zmax]
+
+    print("Rotation complete.")
