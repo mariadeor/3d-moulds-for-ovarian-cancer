@@ -17,15 +17,16 @@ from rt_utils import RTStructBuilder
 
 
 #%% -----------------FUNCTIONS--------------
-def get_roi_masks(case_specificities_dict):
+def get_roi_masks(dicom_info_dict):
     """
-    This function gets the masks of the ROIs.
-            INPUTS:
-                path_to_dicom <str>:       Path to DICOM folder containing the images and the DICOM-RT file.
-            OUTPUTS:
-                roi_masks <numpy.ndarray>: Boolean array of the ROIs.
+    This function returns DICOM ROIs as Numpy boolean arrays.
+        INPUTS:
+            dicom_info_dict <dict>: Dictionary of the DICOM information from the main function input yaml file.
+        OUTPUTS:
+            roi_masks <numpy.ndarray>: Boolean array of the ROIs.
     """
-    path_to_dicom = case_specificities_dict['path_to_dicom']
+    
+    path_to_dicom = dicom_info_dict['path_to_dicom']
     # Find the DICOM-RT
     for dcmfile in os.listdir(path_to_dicom):
         if not dcmfile.startswith('.'):
@@ -40,28 +41,28 @@ def get_roi_masks(case_specificities_dict):
                   dicom_series_path = path_to_dicom,
                   rt_struct_path = rt_struct_path
                 ) 
-    tumour_mask          = rt_struct.get_roi_mask_by_name(case_specificities_dict['tumour_roi_name'])
-    base_mask            = rt_struct.get_roi_mask_by_name(case_specificities_dict['base_roi_name'])
-    ref_point_1_mask     = rt_struct.get_roi_mask_by_name(case_specificities_dict['ref_point_1_roi_name'])
-    ref_point_2_mask     = rt_struct.get_roi_mask_by_name(case_specificities_dict['ref_point_2_roi_name'])
+    tumour_mask          = rt_struct.get_roi_mask_by_name(dicom_info_dict['tumour_roi_name'])
+    base_mask            = rt_struct.get_roi_mask_by_name(dicom_info_dict['base_roi_name'])
+    ref_point_1_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_1_roi_name'])
+    ref_point_2_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_2_roi_name'])
     
     return tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask
 
 
 def reslice(array, scale_x, scale_y, scale_z):
-    '''
+    """
     This function reslices and interpolates the input array to (1, 1, 1) mm voxel size using zero-order spline interpolation.
             INPUTS:
                 array <numpy.ndarray>:             Array to reslice and interpolate.
-                scale_x, scale_y, scale_z <float>: Original DICOM images voxel size.
+                scale_x, scale_y, scale_z <float>: Original DICOM images voxel size in mm.
             OUTPUTS:
-                array <numpy.ndarray>: Resliced and interpolated input array to (1, 1, 1). 
-    '''
-    return scipy.ndimage.zoom(array, (scale_x, scale_y, scale_z), order = 0, prefilter=False)
+                array <numpy.ndarray>: Resliced and interpolated input array to (1, 1, 1) mm voxel size.
+    """
+    return scipy.ndimage.zoom(array, (scale_x, scale_y, scale_z), order = 0, prefilter = False)
 
 
 def get_centroid(mask, val = True):
-    '''
+    """
     This function returns the centroid of the pixels equal to a specified value. 
     If a value is not specified, the function assumes it is a boolean array and looks for the centroid of the True pixels.
             INPUTS:
@@ -69,19 +70,21 @@ def get_centroid(mask, val = True):
                 val (optional):       Value of the pixels to find the centroid of.
             OUTPUTS:
                 y, x, z <float>: Centroid coordinates. 
-    '''
+    """
+    
     idx = np.where(mask == val)
     return np.array([np.mean(idx[0]), np.mean(idx[1]), np.mean(idx[2])])
 
 
 def get_box(mask):
-    '''
+    """
     This function returns the bounding box of the True pixels of a boolean array.
             INPUTS:
                 mask <numpy.ndarray>: Boolean array.
             OUTPUTS:
                 rmin, rmax, cmin, cmax, zmin, zmax <int>: Bounding box limits (y, x, z).
-    '''
+    """
+    
     r = np.any(mask, axis=(1, 2))
     c = np.any(mask, axis=(0, 2))
     z = np.any(mask, axis=(0, 1))
