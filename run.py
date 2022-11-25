@@ -22,6 +22,7 @@ if __name__ == '__main__':
     parser.add_argument('--dicom_info', type = str, default = 'dicom_info.yaml')
     parser.add_argument('--results_path', type = str, default = 'results', help = "Path to the folder where to save the results. A subfolder under the mould_id name will be created.")
     parser.add_argument('--display', action='store_true')
+    parser.add_argument('--save_preproc', action='store_true')
     
     args = parser.parse_args()
     
@@ -172,3 +173,13 @@ if __name__ == '__main__':
     tumour_wcs = np.rot90(tumour_wcs, k = 2, axes = (1, 0))
 
     print("Transformation to WCS complete.")
+    
+    
+    #%% ----------------------------------------
+    # 5. TUMOUR MODELLING
+    # ------------------------------------------
+    print("# ------------------------------------------ \n# 5. TUMOUR MODELLING \n# ------------------------------------------")
+    tumour_replica_filename = os.path.join(dst_dir, 'tumour_replica_' + mould_id + '.stl')
+    tumour_replica_mesh = mesh_and_smooth(tumour_wcs, tumour_replica_filename, save_preproc = args.save_preproc) # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
+
+    print("Tumour modelling complete.")
