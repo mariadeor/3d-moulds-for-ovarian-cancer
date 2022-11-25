@@ -1,3 +1,10 @@
+#####################################################################
+# AUTHOR        Maria Delgado-Ortet
+# CONTACT       md863@cam.ac.uk
+# INSTITUTION   Department of Radiology, University of Cambridge
+# DATE          Nov 2022
+#####################################################################
+
 import argparse
 import math
 import shutil
@@ -17,15 +24,32 @@ if __name__ == '__main__':
     #%% ----------------------------------------
     # ARGUMENT PARSER
     # ------------------------------------------
-    parser = argparse.ArgumentParser(description = "Let's build a mould!")
-    parser.add_argument('mould_id', type = str)
-    parser.add_argument('--tunable_parameters', type = str, default = 'tunable_parameters.yaml')
-    parser.add_argument('--dicom_info', type = str, default = 'dicom_info.yaml')
-    parser.add_argument('--results_path', type = str, default = 'results', help = "Path to the folder where to save the results. A subfolder under the mould_id name will be created.")
-    parser.add_argument('--display', action='store_true')
-    parser.add_argument('--save_preproc', action='store_true')
-    parser.add_argument('--save_scad_intermediates', action='store_true')
-    
+    parser = argparse.ArgumentParser(description="Let's build a mould!")
+
+    parser.add_argument('mould_id', type=str,
+                        help="ID for the mould to be built. The results filenames will contain it")
+
+    parser.add_argument('--tunable_parameters', type=str,
+                        default='tunable_parameters.yaml',
+                        help="path to the yaml file with the tunable parameters. Specify if different to 'tunable_parameters.yaml'")
+
+    parser.add_argument('--dicom_info', type=str,
+                        default='dicom_info.yaml',
+                        help="path to the yaml file with the dicom info. Specify if different to 'dicom_info.yaml'")
+
+    parser.add_argument('--results_path', type=str,
+                        default='results',
+                        help="path to the folder where to save the results. A subfolder under the mould_id name will be created. Specify if different to 'results'")
+
+    parser.add_argument('--display', action='store_true',
+                        help="if present, the code displays the maks for the ROIs before and after rotation.")
+
+    parser.add_argument('--save_preproc', action='store_true',
+                        help="if present, the code saves the tumour stl mesh before smoothing.")
+
+    parser.add_argument('--save_scad_intermediates', action='store_true',
+                        help="if present, the code saves the scad files of each individual parts of the mould.")
+
     args = parser.parse_args()
     
     #%% ----------------------------------------
@@ -109,7 +133,7 @@ if __name__ == '__main__':
     tumour_slices = np.unique(np.argwhere(tumour_mask)[:,2])
     nbr_tumour_slices = len(tumour_slices)
 
-    if args.display: # OPT: Display rois_combined
+    if args.display: # OPT: Display resliced rois_combined
         print("Displaying imported VOIs...")
         for z in tumour_slices: # z goes from caudal to cranial
             curr_rois_combined_slice = rois_combined[:, :, z]
@@ -141,7 +165,7 @@ if __name__ == '__main__':
             rois_combined_rotated[:, :, z] = scipy.ndimage.rotate(rois_combined_rotated[:, :, z], 180, reshape=False, order=0)
         print(" OK")
 
-    if args.display: # OPT: Display rois_combined_rotated and habitats_rotated
+    if args.display: # OPT: Display rois_combined_rotated
         print("\t\tDisplaying rotated VOIs...")
         for z in range(nbr_tumour_slices):
             curr_rois_combined_slice = rois_combined_rotated[:, :, z]
@@ -219,7 +243,7 @@ if __name__ == '__main__':
 
     # Convert the "spiky" tumour to stl, postprocess and save
     tumour_w_spikes_filename = os.path.join(dst_dir, 'tumour_w_spikes_' + mould_id + '.stl')
-    tumour_w_spikes_mesh = mesh_and_smooth(tumour_w_spikes, tumour_w_spikes_filename, save_preproc=args.save_preproc) # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
+    tumour_w_spikes_mesh = mesh_and_smooth(tumour_w_spikes, tumour_w_spikes_filename, save_preproc=False)
     
     # ------------------------------------------
     # Build the mould base
