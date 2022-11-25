@@ -21,10 +21,9 @@ if __name__ == '__main__':
     parser.add_argument('--tunable_parameters', type = str, default = 'tunable_parameters.yaml')
     parser.add_argument('--dicom_info', type = str, default = 'dicom_info.yaml')
     parser.add_argument('--results_path', type = str, default = 'results', help = "Path to the folder where to save the results. A subfolder under the mould_id name will be created.")
-    parser.add_argument('--display_bool', type = bool, default = False)
+    parser.add_argument('--display', action='store_true')
     
     args = parser.parse_args()
-        
     
     #%% ----------------------------------------
     # 1. IMPORT INPUTS
@@ -89,8 +88,8 @@ if __name__ == '__main__':
     print(" OK")
     print("\t\tOriginal voxel size: (%f, %f, %f) mm" % (scale_x, scale_y, scale_z))
 
-
     print("Re-slicing complete.")
+    
     
     #%% ----------------------------------------
     # 2. ROTATION
@@ -107,7 +106,7 @@ if __name__ == '__main__':
     tumour_slices = np.unique(np.argwhere(tumour_mask)[:,2])
     nbr_tumour_slices = len(tumour_slices)
 
-    if args.display_bool: # OPT: Display rois_combined
+    if args.display: # OPT: Display rois_combined
         print("Displaying imported VOIs...")
         for z in tumour_slices: # z goes from caudal to cranial
             curr_rois_combined_slice = rois_combined[:, :, z]
@@ -115,6 +114,9 @@ if __name__ == '__main__':
             plt.matshow(curr_rois_combined_slice)
             plt.axis('off')
             plt.title("Imported and re-sliced VOIs \nSlice " + str(z))
+            
+            plt.show(block=False)
+            plt.pause(0.001)
 
     print("# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------")
     # Find the rotation angle on the xy plane
@@ -136,14 +138,17 @@ if __name__ == '__main__':
             rois_combined_rotated[:, :, z] = scipy.ndimage.rotate(rois_combined_rotated[:, :, z], 180, reshape=False, order=0)
         print(" OK")
 
-    if args.display_bool: # OPT: Display rois_combined_rotated and habitats_rotated
+    if args.display: # OPT: Display rois_combined_rotated and habitats_rotated
+        print("\t\tDisplaying rotated VOIs...")
         for z in range(nbr_tumour_slices):
-            print("\t\tDisplaying rotated VOIs...")
             curr_rois_combined_slice = rois_combined_rotated[:, :, z]
 
             plt.matshow(curr_rois_combined_slice)
             plt.axis('off')
             plt.title("Rotated VOIs \nSlice " + str(z))
+            
+            plt.show(block=False)
+            plt.pause(0.001)
 
     # Keep only the tumour VOI
     tumour_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
