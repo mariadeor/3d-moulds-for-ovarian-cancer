@@ -6,6 +6,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 from solid import *
+from skimage.draw import polygon2mask
 
 from utils.import_functions import *
 from utils.manipulate_dicom_functions import *
@@ -23,6 +24,7 @@ if __name__ == '__main__':
     parser.add_argument('--results_path', type = str, default = 'results', help = "Path to the folder where to save the results. A subfolder under the mould_id name will be created.")
     parser.add_argument('--display', action='store_true')
     parser.add_argument('--save_preproc', action='store_true')
+    parser.add_argument('--save_scad_intermediates', action='store_true')
     
     args = parser.parse_args()
     
@@ -75,7 +77,7 @@ if __name__ == '__main__':
     #%% ----------------------------------------
     # 2. RE-SLICING
     # ------------------------------------------
-    print("# ------------------------------------------ \n# 2. RE-SLICING \n# ------------------------------------------")
+    print("\n# ------------------------------------------ \n# 2. RE-SLICING \n# ------------------------------------------")
     print("\t## Re-slicing VOIs to voxel size (1, 1, 1) mm...", end = "")
     ds = pydicom.dcmread(os.path.join(dicom_info_dict['path_to_dicom'], os.listdir(dicom_info_dict['path_to_dicom'])[1]))
     scale_x = ds.PixelSpacing[0]
@@ -119,7 +121,7 @@ if __name__ == '__main__':
             plt.show(block=False)
             plt.pause(0.001)
 
-    print("# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------")
+    print("\n# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------")
     # Find the rotation angle on the xy plane
     dx      = get_centroid(ref_point_1_mask)[1] - get_centroid(ref_point_2_mask)[1]
     dy      = get_centroid(ref_point_1_mask)[0] - get_centroid(ref_point_2_mask)[0]
@@ -165,7 +167,7 @@ if __name__ == '__main__':
     #%% ----------------------------------------
     # 4. TRANSFORMATION TO WCS
     # ------------------------------------------
-    print("# ------------------------------------------ \n# 4. TRANSFORMATION TO WCS \n# ------------------------------------------")
+    print("\n# ------------------------------------------ \n# 4. TRANSFORMATION TO WCS \n# ------------------------------------------")
     # Bring the tumour to the WCS ensuring the cuts are along the cranial-caudal axis
     tumour_wcs = np.rot90(tumour_rotated, k = 1, axes = (2, 0))
 
@@ -178,8 +180,209 @@ if __name__ == '__main__':
     #%% ----------------------------------------
     # 5. TUMOUR MODELLING
     # ------------------------------------------
-    print("# ------------------------------------------ \n# 5. TUMOUR MODELLING \n# ------------------------------------------")
+    print("\n# ------------------------------------------ \n# 5. TUMOUR MODELLING \n# ------------------------------------------")
     tumour_replica_filename = os.path.join(dst_dir, 'tumour_replica_' + mould_id + '.stl')
-    tumour_replica_mesh = mesh_and_smooth(tumour_wcs, tumour_replica_filename, save_preproc = args.save_preproc) # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
+    tumour_replica_mesh = mesh_and_smooth(tumour_wcs, tumour_replica_filename, save_preproc=args.save_preproc) # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
 
     print("Tumour modelling complete.")
+
+
+    #%% ----------------------------------------
+    # 6. MOULD MODELLING
+    # ------------------------------------------
+    print("\n# ------------------------------------------ \n# 6. MOULD MODELLING \n# ------------------------------------------")
+
+    print("\t## Ensuring the mould base will not close after the slice with the largest area...", end = "")
+    
+    # Find the slice with the maximum area
+    max_area = np.sum(tumour_wcs[:, :, 0])
+    max_area_slice_idx = 0
+    for z in range(tumour_wcs.shape[2]):
+        slice_area = np.sum(tumour_wcs[:, :, z])
+        if slice_area > max_area:
+            max_area = slice_area
+            max_area_slice_idx = z
+
+    # Create a mask of the convex hull projection on the xy plane
+    tumour_voxels = np.argwhere(tumour_wcs)
+    tumour_xy_coords = tumour_voxels[:, [0,1]] # Keep all points x and y coordinates
+
+    tumour_xy_convex_hull_coords = get_xy_convex_hull_coords(tumour_xy_coords)
+    tumour_xy_convex_hull_mask = polygon2mask(image_shape = (tumour_wcs.shape[0], tumour_wcs.shape[1]),
+                                              polygon = tumour_xy_convex_hull_coords)
+
+    # Replace all the slices above the slice with the maximum area with the mask created above
+    tumour_w_spikes = tumour_wcs.copy() # The output is a tumour with "spiky" appearance
+    for z in range(max_area_slice_idx + 1, tumour_w_spikes.shape[2]):
+        tumour_w_spikes[:, :, z] = tumour_xy_convex_hull_mask
+    print(" OK")
+
+    # Convert the "spiky" tumour to stl, postprocess and save
+    tumour_w_spikes_filename = os.path.join(dst_dir, 'tumour_w_spikes_' + mould_id + '.stl')
+    tumour_w_spikes_mesh = mesh_and_smooth(tumour_w_spikes, tumour_w_spikes_filename, save_preproc=args.save_preproc) # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
+    
+    # ------------------------------------------
+    # Build the mould base
+    # ------------------------------------------
+    print("\t## Building the mould base...", end = "")
+
+    # Import the hull of the "spiky" tumour
+    scad_tumour_convex_hull = hull()(import_stl(os.path.split(tumour_w_spikes_filename)[-1]))
+
+    # OPT: Comment not to remove the stl file of the "spiky" tumour
+    # os.remove(os.path.join('tumour_w_spikes_' + mould_id + '.stl'))
+
+    # Find the convex hull projection on the xy plane of the "spiky" tumour
+    ## The reason the hull extracted above is not used is because the stl file is centered at (0,0) and this is
+    ## the reference while building the mould.
+    tumour_xy_coords = np.array([tumour_w_spikes_mesh.vertices[:,0], tumour_w_spikes_mesh.vertices[:,1]]).T
+    tumour_xy_convex_hull_coords = get_xy_convex_hull_coords(tumour_xy_coords)
+
+    # Create the mould base: a block of shape of the convex hull projection and of height = mouldHeight
+    tumour_sz = tumour_replica_mesh.extents
+    cavity_height = cavity_height_pct * tumour_sz[2]
+    scad_mould_cavity = linear_extrude(height = cavity_height)(
+        offset(r = cavity_wall_thickness)(polygon(tumour_xy_convex_hull_coords))
+        )
+
+    # Carve the tumour hull inside the base
+    scad_mould = scad_mould_cavity - scad_tumour_convex_hull
+
+    if args.save_scad_intermediates:
+        scad_render_to_file(scad_mould, os.path.join(dst_dir, 'mould_cavity_' + mould_id + '.scad'))
+
+    print(" OK")
+    
+    # ------------------------------------------
+    # Add plate to the mould base
+    # ------------------------------------------
+    print("\t## Adding plate to the the mould base...", end = "")
+    baseplate_xy_offset += cavity_wall_thickness
+    scad_baseplate = linear_extrude(height = baseplate_height)(
+        offset(r = baseplate_xy_offset)(polygon(tumour_xy_convex_hull_coords))
+        )
+
+    scad_mould = translate([0, 0, baseplate_height])(scad_mould) + scad_baseplate;
+
+    if args.save_scad_intermediates:
+        scad_render_to_file(scad_mould, os.path.join(dst_dir, 'mould_cavity_w_baseplate_' + mould_id + '.scad'))
+    
+    print(" OK")
+    
+    # ------------------------------------------
+    # Build the slicing guide
+    # ------------------------------------------
+    print("\t## Building the slicing guide...", end = "")
+
+    # Create the cutting guide main wall - It will be as with as the tumour + the mouldBase
+    guides_height = tumour_sz[2] + slguide_height_offset - baseplate_height
+    scad_slguide = cube([tumour_sz[0] + 2*cavity_wall_thickness, guides_thickness, guides_height])
+
+    # Translate it: Center with respect to the cavity and upwards as the baseplate_height
+    scad_slguide = translate([-(tumour_sz[0] + 2*cavity_wall_thickness)/2, (tumour_sz[1] + 2*baseplate_xy_offset)/2, baseplate_height])(scad_slguide)
+
+    if args.save_scad_intermediates:
+        scad_render_to_file(scad_slguide, os.path.join(dst_dir, 'slicing_guide_' + mould_id + '.scad'))
+
+    # Add it to the mould structure
+    scad_mould += scad_slguide
+
+    print(" OK")
+    
+    # ------------------------------------------
+    # Build the perpendicular cutting guides for the slid orientation
+    # ------------------------------------------
+    print("\t## Building the orientation guides...", end = "")
+    # Create the perpendicular cutting guide wall
+    scad_orguide = cube([guides_thickness, 2*guides_thickness, guides_height]) # As it will be only two "pillars", y = 2*guideSize.
+
+    # Place it on the left of the mould and add translate upwards as baseplate offset
+    scad_orguide_left = translate([-(tumour_sz[0] + 2*baseplate_xy_offset)/2 - baseplate_xy_offset - dist_orguide_baseplate, -(2*guides_thickness)/2, baseplate_height])(scad_orguide)
+
+    # Place it also on the right of the mould and translate upwards as the baseplate offset
+    scad_orguide_right = translate([(tumour_sz[0] + 2*baseplate_xy_offset)/2 + dist_orguide_baseplate, -(2*guides_thickness)/2, baseplate_height])(scad_orguide)
+
+    if args.save_scad_intermediates:
+        scad_render_to_file(scad_orguide_left + scad_orguide_right, os.path.join(dst_dir, 'orientation_guides_' + mould_id + '.scad'))
+
+    # Add it to the mould structure
+    scad_mould += scad_orguide_left + scad_orguide_right
+    print(" OK")
+
+    # ------------------------------------------
+    # Add baseplate to the slicing and orientation guides
+    # ------------------------------------------
+    print("\t## Adding plate to the slicing and orientation guides...", end = "")
+    # The baseplate for the slicing guide also need to extend along the x direction to meet the perpendicular guide baseplates.
+    scad_slguide_baseplate = cube([tumour_sz[0] + 2*baseplate_xy_offset + dist_orguide_baseplate*2, guides_thickness, baseplate_height])
+
+    # Center it
+    scad_slguide_baseplate = translate([-(tumour_sz[0] + 2*baseplate_xy_offset + dist_orguide_baseplate*2)/2, (tumour_sz[1] + 2*baseplate_xy_offset)/2, 0])(scad_slguide_baseplate)
+
+    # Add it to the mould structure
+    scad_mould += scad_slguide_baseplate
+
+    # Create the baseplate for the orientation guides
+    scad_orguide_baseplate = cube([guides_thickness, tumour_sz[1] + 2*baseplate_xy_offset + guides_thickness, baseplate_height])
+
+    # Place it on the left
+    scad_orguide_baseplate_left = translate([-(tumour_sz[0] + 2*baseplate_xy_offset)/2 - guides_thickness - dist_orguide_baseplate, -(tumour_sz[1] + 2*baseplate_xy_offset)/2, 0])(scad_orguide_baseplate)
+    scad_orguide_baseplate_right = translate([(tumour_sz[0] + 2*baseplate_xy_offset)/2 + dist_orguide_baseplate, -(tumour_sz[1] + 2*baseplate_xy_offset)/2, 0])(scad_orguide_baseplate)
+    print(' OK')
+
+    # Add it to the mould structure
+    print("\t## Adding slicing and orientation guides to the mould...", end = "")
+    scad_mould += scad_orguide_baseplate_left + scad_orguide_baseplate_right
+
+    if args.save_scad_intermediates:
+        scad_render_to_file(scad_mould, os.path.join(dst_dir, 'complete_mould_no_slits_' + mould_id + '.scad'))
+
+    print(" OK")
+
+    # ------------------------------------------
+    # Cut the mould structure
+    # ------------------------------------------
+    print("\t## Cutting the mould structure...", end = "")
+
+    # Create the slit structure to be carved from the mould to cut along x (slicing guide)
+    scad_slicing_slit = cube([slit_thickness, guides_thickness + 2*baseplate_xy_offset + tumour_sz[1], guides_height])
+
+    # Start cutting from the centre
+    scad_slicing_slit_central = translate([-slit_thickness/2, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit)
+    scad_mould -= scad_slicing_slit_central
+
+    # Make the rest of the cuts
+    nbr_cuts_each_half_x = math.floor(tumour_sz[0]/2/slice_thickness)
+    for cut in range(nbr_cuts_each_half_x):
+        slit_x_position = slice_thickness*(cut + 1)
+        scad_mould -= translate([-slit_thickness/2 + slit_x_position, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit) # Cuts on the left
+        scad_mould -= translate([-slit_thickness/2 - slit_x_position, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit) # Cuts on the right
+
+    # Create the structure to be carved from the mould to cut along y (perpendicular cutting guide)
+    scad_orientation_slit = cube([2*guides_thickness + 2*baseplate_xy_offset + tumour_sz[0] + 2*dist_orguide_baseplate, slit_thickness, guides_height])
+
+    # Center it and position to the approrpiate z height
+    scad_orientation_slit = translate([-(2*guides_thickness + 2*baseplate_xy_offset + tumour_sz[0] + 2*dist_orguide_baseplate)/2, -slice_thickness/2, cavity_height - depth_orslit])(scad_orientation_slit)
+
+    # Cut it
+    scad_mould -= scad_orientation_slit
+
+    # Carve the letters
+    font = "Liberation Sans"
+    character_depth = 10;
+    character_size = 0.5*(slice_thickness - slit_thickness);
+
+    start_pos = nbr_cuts_each_half_x * slice_thickness + slice_thickness/2
+    nbr_cuts = nbr_cuts_each_half_x * 2
+    for nbr in range(1, nbr_cuts + 1):
+        scad_char = translate([-start_pos + slice_thickness*nbr, (tumour_sz[1] + 2*baseplate_xy_offset)/2 + guides_thickness/2, guides_height + baseplate_height - character_depth])(
+            linear_extrude(height = character_depth)(text(str(nbr), size = character_size, font = font, halign = 'center', valign = 'center'))
+        )
+        scad_mould -= scad_char
+
+    # Save the mould
+    scad_render_to_file(scad_mould, os.path.join(dst_dir, 'mould_' + mould_id + '.scad'))
+
+    print(" OK")
+
+    print("Mould modelling complete.")
