@@ -92,7 +92,7 @@ if __name__ == '__main__':
     
     
     #%% ----------------------------------------
-    # 2. ROTATION
+    # 3. ROTATION
     # ------------------------------------------
     # Create a label mask with all the ROIs
     scan_sz = np.shape(tumour_mask)
@@ -159,3 +159,16 @@ if __name__ == '__main__':
     tumour_rotated = tumour_rotated[rmin:rmax, cmin:cmax, zmin:zmax]
 
     print("Rotation complete.")
+
+
+    #%% ----------------------------------------
+    # 4. TRANSFORMATION TO WCS
+    # ------------------------------------------
+    print("# ------------------------------------------ \n# 4. TRANSFORMATION TO WCS \n# ------------------------------------------")
+    # Bring the tumour to the WCS ensuring the cuts are along the cranial-caudal axis
+    tumour_wcs = np.rot90(tumour_rotated, k = 1, axes = (2, 0))
+
+    # Rotate the tumour in the WCS so cranial is at the first cut
+    tumour_wcs = np.rot90(tumour_wcs, k = 2, axes = (1, 0))
+
+    print("Transformation to WCS complete.")
