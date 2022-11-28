@@ -17,7 +17,8 @@ from skimage.draw import polygon2mask
 from solid import (cube, hull, import_stl, linear_extrude, offset, polygon,
                    scad_render_to_file, text, translate)
 
-from utils.import_functions import *
+from utils.import_functions import (check_dicom_info, check_tunable_parameters,
+                                    import_yaml)
 from utils.manipulate_dicom_functions import *
 from utils.mould_modelling_functions import *
 from utils.tumour_modelling_function import *
