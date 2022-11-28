@@ -51,29 +51,29 @@ if __name__ == '__main__':
                         help="if present, the code saves the scad files of each individual parts of the mould.")
 
     args = parser.parse_args()
-    
+
     #%% ----------------------------------------
     # 1. IMPORT INPUTS
     # ------------------------------------------
     print("# ------------------------------------------ \n# 1. IMPORT INPUTS \n# ------------------------------------------")
 
-    print("\t## Importing " + args.tunable_parameters + "...", end = "")
+    print("\t## Importing " + args.tunable_parameters + "...", end="")
     globals().update(import_yaml(args.tunable_parameters, check_tunable_parameters))
     print(" OK")
 
-    print("\t## Importing " + args.dicom_info + "...", end = "")
+    print("\t## Importing " + args.dicom_info + "...", end="")
     dicom_info_dict = import_yaml(args.dicom_info, check_dicom_info)
     print(" OK")
 
-    print("\t## Extracting VOIs...", end = "")
+    print("\t## Extracting VOIs...", end="")
     tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(dicom_info_dict)
     print(" OK")
-    
+
     path_to_results = args.results_path
     mould_id = args.mould_id
     if not os.path.isdir(path_to_results):
         os.mkdir(path_to_results)
-    
+
     dst_dir = os.path.join(path_to_results, mould_id)
     try:
         os.mkdir(dst_dir)
@@ -84,10 +84,10 @@ if __name__ == '__main__':
         mould_id = mould_id + "_" + date_time
         new_dst_dir = os.path.join(path_to_results, mould_id)
         print("WARNING: " + dst_dir + " already exists. Creating " + new_dst_dir + " instead.")
-        
+
         dst_dir = new_dst_dir
         os.mkdir(dst_dir)
-        
+
     print("Saving imported yaml files to " + os.path.join(dst_dir, 'yaml_inputs') + "...", end = "")
     os.mkdir(os.path.join(dst_dir, 'yaml_inputs'))
     shutil.copyfile(args.tunable_parameters, os.path.join(dst_dir, 'yaml_inputs', 'tunable_parameters.yaml'))
@@ -96,8 +96,8 @@ if __name__ == '__main__':
     print(" OK")
 
     print("Import complete.")
-    
-    
+
+
     #%% ----------------------------------------
     # 2. RE-SLICING
     # ------------------------------------------
