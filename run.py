@@ -24,7 +24,7 @@ from utils.import_functions import (check_dicom_info, check_tunable_parameters,
 from utils.manipulate_dicom_functions import (get_box, get_centroid,
                                               get_roi_masks, reslice)
 from utils.mould_modelling_functions import get_xy_convex_hull_coords
-from utils.tumour_modelling_function import *
+from utils.tumour_modelling_function import mesh_and_smooth
 
 if __name__ == '__main__':
     #%% ----------------------------------------
