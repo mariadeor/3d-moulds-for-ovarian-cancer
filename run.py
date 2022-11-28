@@ -193,20 +193,20 @@ if __name__ == '__main__':
     # ------------------------------------------
     print("\n# ------------------------------------------ \n# 4. TRANSFORMATION TO WCS \n# ------------------------------------------")
     # Bring the tumour to the WCS ensuring the cuts are along the cranial-caudal axis
-    tumour_wcs = np.rot90(tumour_rotated, k = 1, axes = (2, 0))
+    tumour_wcs = np.rot90(tumour_rotated, k=1, axes=(2, 0))
 
     # Rotate the tumour in the WCS so cranial is at the first cut
-    tumour_wcs = np.rot90(tumour_wcs, k = 2, axes = (1, 0))
+    tumour_wcs = np.rot90(tumour_wcs, k=2, axes=(1, 0))
 
     print("Transformation to WCS complete.")
-    
-    
+
+
     #%% ----------------------------------------
     # 5. TUMOUR MODELLING
     # ------------------------------------------
     print("\n# ------------------------------------------ \n# 5. TUMOUR MODELLING \n# ------------------------------------------")
     tumour_replica_filename = os.path.join(dst_dir, 'tumour_replica_' + mould_id + '.stl')
-    tumour_replica_mesh = mesh_and_smooth(tumour_wcs, tumour_replica_filename, save_preproc=args.save_preproc) # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
+    tumour_replica_mesh = mesh_and_smooth(tumour_wcs, tumour_replica_filename, save_preproc=args.save_preproc)  # OPT: Add input save_preproc = True to save the stl of the preprocessed (prior to smoothing) mesh
 
     print("Tumour modelling complete.")
 
