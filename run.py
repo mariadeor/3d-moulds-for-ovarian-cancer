@@ -216,8 +216,8 @@ if __name__ == '__main__':
     # ------------------------------------------
     print("\n# ------------------------------------------ \n# 6. MOULD MODELLING \n# ------------------------------------------")
 
-    print("\t## Ensuring the mould base will not close after the slice with the largest area...", end = "")
-    
+    print("\t## Ensuring the mould base will not close after the slice with the largest area...", end="")
+
     # Find the slice with the maximum area
     max_area = np.sum(tumour_wcs[:, :, 0])
     max_area_slice_idx = 0
@@ -229,14 +229,14 @@ if __name__ == '__main__':
 
     # Create a mask of the convex hull projection on the xy plane
     tumour_voxels = np.argwhere(tumour_wcs)
-    tumour_xy_coords = tumour_voxels[:, [0,1]] # Keep all points x and y coordinates
+    tumour_xy_coords = tumour_voxels[:, [0, 1]]  # Keep all points x and y coordinates
 
     tumour_xy_convex_hull_coords = get_xy_convex_hull_coords(tumour_xy_coords)
-    tumour_xy_convex_hull_mask = polygon2mask(image_shape = (tumour_wcs.shape[0], tumour_wcs.shape[1]),
-                                              polygon = tumour_xy_convex_hull_coords)
+    tumour_xy_convex_hull_mask = polygon2mask(image_shape=(tumour_wcs.shape[0], tumour_wcs.shape[1]),
+                                              polygon=tumour_xy_convex_hull_coords)
 
     # Replace all the slices above the slice with the maximum area with the mask created above
-    tumour_w_spikes = tumour_wcs.copy() # The output is a tumour with "spiky" appearance
+    tumour_w_spikes = tumour_wcs.copy()  # The output is a tumour with "spiky" appearance
     for z in range(max_area_slice_idx + 1, tumour_w_spikes.shape[2]):
         tumour_w_spikes[:, :, z] = tumour_xy_convex_hull_mask
     print(" OK")
@@ -244,7 +244,7 @@ if __name__ == '__main__':
     # Convert the "spiky" tumour to stl, postprocess and save
     tumour_w_spikes_filename = os.path.join(dst_dir, 'tumour_w_spikes_' + mould_id + '.stl')
     tumour_w_spikes_mesh = mesh_and_smooth(tumour_w_spikes, tumour_w_spikes_filename, save_preproc=False)
-    
+
     # ------------------------------------------
     # Build the mould base
     # ------------------------------------------
