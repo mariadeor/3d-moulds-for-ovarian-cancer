@@ -28,4 +28,5 @@ def get_xy_convex_hull_coords(xy_coords):
 
     xy_convex_hull = ConvexHull(xy_coords, incremental=True)
     xy_convex_hull_coords_idx = xy_convex_hull.vertices
+
     return xy_coords[xy_convex_hull_coords_idx]
