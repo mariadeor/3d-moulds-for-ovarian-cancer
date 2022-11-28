@@ -262,8 +262,8 @@ if __name__ == '__main__':
     # Create the mould base: a block of shape of the convex hull projection and of height = mouldHeight
     tumour_sz = tumour_replica_mesh.extents
     cavity_height = cavity_height_pct * tumour_sz[2]
-    scad_mould_cavity = linear_extrude(height = cavity_height)(
-        offset(r = cavity_wall_thickness)(polygon(tumour_xy_convex_hull_coords))
+    scad_mould_cavity = linear_extrude(height=cavity_height)(
+        offset(r=cavity_wall_thickness)(polygon(tumour_xy_convex_hull_coords))
         )
 
     # Carve the tumour hull inside the base
@@ -273,23 +273,23 @@ if __name__ == '__main__':
         scad_render_to_file(scad_mould, os.path.join(dst_dir, 'mould_cavity_' + mould_id + '.scad'))
 
     print(" OK")
-    
+
     # ------------------------------------------
     # Add plate to the mould base
     # ------------------------------------------
-    print("\t## Adding plate to the the mould base...", end = "")
+    print("\t## Adding plate to the the mould base...", end="")
     baseplate_xy_offset += cavity_wall_thickness
-    scad_baseplate = linear_extrude(height = baseplate_height)(
-        offset(r = baseplate_xy_offset)(polygon(tumour_xy_convex_hull_coords))
+    scad_baseplate = linear_extrude(height=baseplate_height)(
+        offset(r=baseplate_xy_offset)(polygon(tumour_xy_convex_hull_coords))
         )
 
-    scad_mould = translate([0, 0, baseplate_height])(scad_mould) + scad_baseplate;
+    scad_mould = translate([0, 0, baseplate_height])(scad_mould) + scad_baseplate
 
     if args.save_scad_intermediates:
         scad_render_to_file(scad_mould, os.path.join(dst_dir, 'mould_cavity_w_baseplate_' + mould_id + '.scad'))
-    
+
     print(" OK")
-    
+
     # ------------------------------------------
     # Build the slicing guide
     # ------------------------------------------
@@ -309,13 +309,13 @@ if __name__ == '__main__':
     scad_mould += scad_slguide
 
     print(" OK")
-    
+
     # ------------------------------------------
     # Build the perpendicular cutting guides for the slid orientation
     # ------------------------------------------
-    print("\t## Building the orientation guides...", end = "")
+    print("\t## Building the orientation guides...", end="")
     # Create the perpendicular cutting guide wall
-    scad_orguide = cube([guides_thickness, 2*guides_thickness, guides_height]) # As it will be only two "pillars", y = 2*guideSize.
+    scad_orguide = cube([guides_thickness, 2*guides_thickness, guides_height])  # As it will be only two "pillars", y = 2*guideSize.
 
     # Place it on the left of the mould and add translate upwards as baseplate offset
     scad_orguide_left = translate([-(tumour_sz[0] + 2*baseplate_xy_offset)/2 - baseplate_xy_offset - dist_orguide_baseplate, -(2*guides_thickness)/2, baseplate_height])(scad_orguide)
@@ -333,7 +333,7 @@ if __name__ == '__main__':
     # ------------------------------------------
     # Add baseplate to the slicing and orientation guides
     # ------------------------------------------
-    print("\t## Adding plate to the slicing and orientation guides...", end = "")
+    print("\t## Adding plate to the slicing and orientation guides...", end="")
     # The baseplate for the slicing guide also need to extend along the x direction to meet the perpendicular guide baseplates.
     scad_slguide_baseplate = cube([tumour_sz[0] + 2*baseplate_xy_offset + dist_orguide_baseplate*2, guides_thickness, baseplate_height])
 
@@ -352,7 +352,7 @@ if __name__ == '__main__':
     print(' OK')
 
     # Add it to the mould structure
-    print("\t## Adding slicing and orientation guides to the mould...", end = "")
+    print("\t## Adding slicing and orientation guides to the mould...", end="")
     scad_mould += scad_orguide_baseplate_left + scad_orguide_baseplate_right
 
     if args.save_scad_intermediates:
@@ -363,7 +363,7 @@ if __name__ == '__main__':
     # ------------------------------------------
     # Cut the mould structure
     # ------------------------------------------
-    print("\t## Cutting the mould structure...", end = "")
+    print("\t## Cutting the mould structure...", end="")
 
     # Create the slit structure to be carved from the mould to cut along x (slicing guide)
     scad_slicing_slit = cube([slit_thickness, guides_thickness + 2*baseplate_xy_offset + tumour_sz[1], guides_height])
@@ -376,8 +376,8 @@ if __name__ == '__main__':
     nbr_cuts_each_half_x = math.floor(tumour_sz[0]/2/slice_thickness)
     for cut in range(nbr_cuts_each_half_x):
         slit_x_position = slice_thickness*(cut + 1)
-        scad_mould -= translate([-slit_thickness/2 + slit_x_position, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit) # Cuts on the left
-        scad_mould -= translate([-slit_thickness/2 - slit_x_position, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit) # Cuts on the right
+        scad_mould -= translate([-slit_thickness/2 + slit_x_position, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit)  # Cuts on the left
+        scad_mould -= translate([-slit_thickness/2 - slit_x_position, -(2*baseplate_xy_offset + tumour_sz[1])/2, baseplate_height])(scad_slicing_slit)  # Cuts on the right
 
     # Create the structure to be carved from the mould to cut along y (perpendicular cutting guide)
     scad_orientation_slit = cube([2*guides_thickness + 2*baseplate_xy_offset + tumour_sz[0] + 2*dist_orguide_baseplate, slit_thickness, guides_height])
@@ -390,14 +390,14 @@ if __name__ == '__main__':
 
     # Carve the letters
     font = "Liberation Sans"
-    character_depth = 10;
-    character_size = 0.5*(slice_thickness - slit_thickness);
+    character_depth = 10
+    character_size = 0.5*(slice_thickness - slit_thickness)
 
     start_pos = nbr_cuts_each_half_x * slice_thickness + slice_thickness/2
     nbr_cuts = nbr_cuts_each_half_x * 2
     for nbr in range(1, nbr_cuts + 1):
         scad_char = translate([-start_pos + slice_thickness*nbr, (tumour_sz[1] + 2*baseplate_xy_offset)/2 + guides_thickness/2, guides_height + baseplate_height - character_depth])(
-            linear_extrude(height = character_depth)(text(str(nbr), size = character_size, font = font, halign = 'center', valign = 'center'))
+            linear_extrude(height=character_depth)(text(str(nbr), size=character_size, font=font, halign='center', valign='center'))
         )
         scad_mould -= scad_char
 
