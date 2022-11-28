@@ -13,6 +13,8 @@ from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pydicom
+import scipy.ndimage
 from skimage.draw import polygon2mask
 from solid import (cube, hull, import_stl, linear_extrude, offset, polygon,
                    scad_render_to_file, text, translate)
@@ -21,7 +23,7 @@ from utils.import_functions import (check_dicom_info, check_tunable_parameters,
                                     import_yaml)
 from utils.manipulate_dicom_functions import (get_box, get_centroid,
                                               get_roi_masks, reslice)
-from utils.mould_modelling_functions import *
+from utils.mould_modelling_functions import get_xy_convex_hull_coords
 from utils.tumour_modelling_function import *
 
 if __name__ == '__main__':
