@@ -12,19 +12,17 @@ from scipy.spatial import ConvexHull
 
 #%% -----------------FUNCTIONS--------------
 def get_xy_convex_hull_coords(xy_coords):
-    '''
+    """
     This function returns the coordinates of the convex hull of the input
     points list.
-            INPUTS:
-                xy_coords <numpy.ndarray>:  (N, 2) array containing the
+        INPUTS:
+            xy_coords <numpy.ndarray>:  (N, 2) array containing the
                                             coordinates of all the points.
-            OUTPUTS:
-                xy_convex_hull_cords <numpy.ndarray>:   (N, 2) array
-                                                        containing the
-                                                        coordinates of the
-                                                        points of the convex
-                                                        hull
-    '''
+        OUTPUTS:
+            xy_convex_hull_cords <numpy.ndarray>:   (N, 2) array containing
+                                                    the coordinates of the
+                                                    points of the convex hull.
+    """
 
     xy_convex_hull = ConvexHull(xy_coords, incremental=True)
     xy_convex_hull_coords_idx = xy_convex_hull.vertices
