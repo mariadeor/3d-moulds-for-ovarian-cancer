@@ -253,9 +253,6 @@ if __name__ == '__main__':
     # Import the hull of the "spiky" tumour
     scad_tumour_convex_hull = hull()(import_stl(os.path.split(tumour_w_spikes_filename)[-1]))
 
-    # OPT: Comment not to remove the stl file of the "spiky" tumour
-    # os.remove(os.path.join('tumour_w_spikes_' + mould_id + '.stl'))
-
     # Find the convex hull projection on the xy plane of the "spiky" tumour
     ## The reason the hull extracted above is not used is because the stl file is centered at (0,0) and this is
     ## the reference while building the mould.
