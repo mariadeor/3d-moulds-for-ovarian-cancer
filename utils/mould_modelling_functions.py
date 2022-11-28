@@ -4,8 +4,8 @@
 # INSTITUTION   Department of Radiology, University of Cambridge
 # DATE          Nov 2022
 #####################################################################
-
-# This file contains the functions defined for mould modelling.
+"""This file contains the function to extract the convex hull coordinates used
+during the mould modelling step."""
 
 #%% -----------------LIBRARIES--------------
 from scipy.spatial import ConvexHull
@@ -13,13 +13,19 @@ from scipy.spatial import ConvexHull
 #%% -----------------FUNCTIONS--------------
 def get_xy_convex_hull_coords(xy_coords):
     '''
-    This function returns the coordinates of the convex hull of the input points list.
+    This function returns the coordinates of the convex hull of the input
+    points list.
             INPUTS:
-                xy_coords <numpy.ndarray>: (N, 2) array containing the coordinates of all the points
+                xy_coords <numpy.ndarray>:  (N, 2) array containing the
+                                            coordinates of all the points.
             OUTPUTS:
-                xy_convex_hull_cords <numpy.ndarray>: (N, 2) array containing the coordinates of the points of the convex hull
+                xy_convex_hull_cords <numpy.ndarray>:   (N, 2) array
+                                                        containing the
+                                                        coordinates of the
+                                                        points of the convex
+                                                        hull
     '''
-    
-    xy_convex_hull = ConvexHull(xy_coords, incremental = True)
+
+    xy_convex_hull = ConvexHull(xy_coords, incremental=True)
     xy_convex_hull_coords_idx = xy_convex_hull.vertices
     return xy_coords[xy_convex_hull_coords_idx]
