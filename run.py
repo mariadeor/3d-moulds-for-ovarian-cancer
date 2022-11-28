@@ -19,7 +19,8 @@ from solid import (cube, hull, import_stl, linear_extrude, offset, polygon,
 
 from utils.import_functions import (check_dicom_info, check_tunable_parameters,
                                     import_yaml)
-from utils.manipulate_dicom_functions import *
+from utils.manipulate_dicom_functions import (get_box, get_centroid,
+                                              get_roi_masks, reslice)
 from utils.mould_modelling_functions import *
 from utils.tumour_modelling_function import *
 
