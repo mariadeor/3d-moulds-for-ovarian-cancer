@@ -14,7 +14,8 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 from skimage.draw import polygon2mask
-from solid import *
+from solid import (cube, hull, import_stl, linear_extrude, offset, polygon,
+                   scad_render_to_file, text, translate)
 
 from utils.import_functions import *
 from utils.manipulate_dicom_functions import *
