@@ -88,7 +88,7 @@ if __name__ == '__main__':
         dst_dir = new_dst_dir
         os.mkdir(dst_dir)
 
-    print("Saving imported yaml files to " + os.path.join(dst_dir, 'yaml_inputs') + "...", end = "")
+    print("Saving imported yaml files to " + os.path.join(dst_dir, 'yaml_inputs') + "...", end="")
     os.mkdir(os.path.join(dst_dir, 'yaml_inputs'))
     shutil.copyfile(args.tunable_parameters, os.path.join(dst_dir, 'yaml_inputs', 'tunable_parameters.yaml'))
     shutil.copyfile(args.dicom_info, os.path.join(dst_dir, 'yaml_inputs', 'dicom_info.yaml'))
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     # ------------------------------------------
     # Build the mould base
     # ------------------------------------------
-    print("\t## Building the mould base...", end = "")
+    print("\t## Building the mould base...", end="")
 
     # Import the hull of the "spiky" tumour
     scad_tumour_convex_hull = hull()(import_stl(os.path.split(tumour_w_spikes_filename)[-1]))
@@ -293,7 +293,7 @@ if __name__ == '__main__':
     # ------------------------------------------
     # Build the slicing guide
     # ------------------------------------------
-    print("\t## Building the slicing guide...", end = "")
+    print("\t## Building the slicing guide...", end="")
 
     # Create the cutting guide main wall - It will be as with as the tumour + the mouldBase
     guides_height = tumour_sz[2] + slguide_height_offset - baseplate_height
