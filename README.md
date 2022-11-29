@@ -11,3 +11,9 @@ The code in this repository runs on Python and has been developed and tested usi
 ```bash
 pip install -r requirements.txt
 ```
+
+## Inputs
+
+## Structure
+### Usage of `run.py`:
+This is the main script. It is composed of different parts that handle inputs import, DICOM re-slicing and rotation, transformation from DICOM to World Coordinate System (WCS) and tumour and mould modelling. This script connects all the steps in the pipeline and calls to specific functions defined in [utils](utils).
