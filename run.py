@@ -137,11 +137,7 @@ except FileExistsError:  # In case path_to_results/mould_id already exists, path
     mould_id = mould_id + "_" + date_time
     new_dst_dir = os.path.join(path_to_results, mould_id)
     print(
-        "WARNING: "
-        + dst_dir
-        + " already exists. Creating "
-        + new_dst_dir
-        + " instead."
+        "WARNING: " + dst_dir + " already exists. Creating " + new_dst_dir + " instead."
     )
     dst_dir = new_dst_dir
     os.mkdir(dst_dir)
@@ -225,9 +221,9 @@ print(
     "\n# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------"
 )
 # Find the rotation angle (theta) on the xy plane (i.e. the axial plane):
-dx = get_centroid(ref_point_1_mask)[1] - get_centroid(ref_point_2_mask)[1]
-dy = get_centroid(ref_point_1_mask)[0] - get_centroid(ref_point_2_mask)[0]
-theta = math.atan(dy / dx) * 180 / math.pi
+dx      = get_centroid(ref_point_1_mask)[1] - get_centroid(ref_point_2_mask)[1]
+dy      = get_centroid(ref_point_1_mask)[0] - get_centroid(ref_point_2_mask)[0]
+theta   = math.atan(dy / dx) * 180 / math.pi
 
 # Rotate each slice theta degrees:
 print(
@@ -636,9 +632,7 @@ for nbr in range(1, nbr_cuts + 1):
     scad_mould -= scad_char
 
 # Save the mould
-scad_render_to_file(
-    scad_mould, os.path.join(dst_dir, "mould_" + mould_id + ".scad")
-)
+scad_render_to_file(scad_mould, os.path.join(dst_dir, "mould_" + mould_id + ".scad"))
 print(" OK")
 
 print("Mould modelling complete.")
