@@ -13,7 +13,10 @@ pip install -r requirements.txt
 ```
 
 ## Inputs
+* *dicom\_info.yaml*: yaml file specifying (1) the path to the folder that contains both the DICOM images and the DICOM-RT file, and (2) the different ROIs naming.
+* *tunable\_parameters.yaml*: yaml file specifying each of the tunable parameters specified in Figure X from the manuscript.
 
 ## Structure
 ### Usage of `run.py`:
 This is the main script. It is composed of different parts that handle inputs import, DICOM re-slicing and rotation, transformation from DICOM to World Coordinate System (WCS) and tumour and mould modelling. This script connects all the steps in the pipeline and calls to specific functions defined in [utils](utils).
+There are multiple options and flags that can be passed to this script.
