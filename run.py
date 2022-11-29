@@ -5,6 +5,7 @@
 # DATE          Nov 2022
 #####################################################################
 
+#%% -----------------LIBRARIES--------------
 import argparse
 import math
 import os
@@ -26,6 +27,8 @@ from utils.manipulate_dicom_functions import (get_box, get_centroid,
 from utils.mould_modelling_functions import get_xy_convex_hull_coords
 from utils.tumour_modelling_function import mesh_and_smooth
 
+
+#%% -----------------MAIN CODE--------------
 if __name__ == '__main__':
     #%% ----------------------------------------
     # ARGUMENT PARSER
