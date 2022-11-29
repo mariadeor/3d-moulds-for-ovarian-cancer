@@ -195,12 +195,12 @@ if __name__ == "__main__":
     # 3. ROTATION
     # ------------------------------------------
     # Create a label mask with all the ROIs:
-    scan_sz = np.shape(tumour_mask)
-    rois_combined = np.zeros(scan_sz)
-    rois_combined[base_mask] = 3
+    scan_sz         = np.shape(tumour_mask)
+    rois_combined   = np.zeros(scan_sz)
+    rois_combined[base_mask]        = 3
     rois_combined[ref_point_1_mask] = 2
     rois_combined[ref_point_2_mask] = 4
-    rois_combined[tumour_mask] = 1
+    rois_combined[tumour_mask]      = 1
 
     # Find the slices where the tumour is segmented:
     tumour_slices = np.unique(np.argwhere(tumour_mask)[:, 2])
@@ -245,10 +245,7 @@ if __name__ == "__main__":
     # In case the rotation resulted in the base being on top (i.e. the y
     # coordinate centroid of the base is greater than the one for the tumour),
     # let's add 180 degrees rotation extra:
-    if (
-        get_centroid(rois_combined_rotated, 1)[0]
-        > get_centroid(rois_combined_rotated, 3)[0]
-    ):
+    if (get_centroid(rois_combined_rotated, 1)[0] > get_centroid(rois_combined_rotated, 3)[0]):
         print(
             "\t## Rotating the the tumour VOI extra 180 degrees on the DICOM axial plane...",
             end="",
@@ -303,9 +300,7 @@ if __name__ == "__main__":
     print(
         "\n# ------------------------------------------ \n# 5. TUMOUR MODELLING \n# ------------------------------------------"
     )
-    tumour_replica_filename = os.path.join(
-        dst_dir, "tumour_replica_" + mould_id + ".stl"
-    )
+    tumour_replica_filename = os.path.join(dst_dir, "tumour_replica_" + mould_id + ".stl")
     tumour_replica_mesh = mesh_and_smooth(
         tumour_wcs, tumour_replica_filename, save_preproc=args.save_preproc
     )  # OPT: Add "--save_preproc" to the command line to save the stl of the preprocessed (prior to smoothing) mesh.
@@ -342,7 +337,7 @@ if __name__ == "__main__":
     )
 
     # Replace all the slices above the slice with the maximum area with the mask created above:
-    tumour_w_spikes = tumour_wcs.copy()  # The output is a tumour with "spiky" appearance
+    tumour_w_spikes = tumour_wcs.copy() # The output is a tumour with "spiky" appearance, here the reason of the variable name.
     for z in range(max_area_slice_idx + 1, tumour_w_spikes.shape[2]):
         tumour_w_spikes[:, :, z] = tumour_xy_convex_hull_mask
     print(" OK")
@@ -363,7 +358,7 @@ if __name__ == "__main__":
     # Find the convex hull projection on the xy plane of the "spiky" tumour:
     ## The reason the hull extracted above is not used is because the stl file is centered at (0,0) and this is
     ## the reference while building the mould.
-    tumour_xy_coords = np.array([tumour_w_spikes_mesh.vertices[:,0], tumour_w_spikes_mesh.vertices[:,1]]).T
+    tumour_xy_coords = np.array([tumour_w_spikes_mesh.vertices[:, 0], tumour_w_spikes_mesh.vertices[:, 1]]).T
     tumour_xy_convex_hull_coords = get_xy_convex_hull_coords(tumour_xy_coords)
 
     # Create the mould base – a block of shape of the convex hull projection and of height = mouldHeight:
@@ -376,7 +371,9 @@ if __name__ == "__main__":
     # Carve the tumour hull inside the base:
     scad_mould = scad_mould_cavity - scad_tumour_convex_hull
 
-    if args.save_scad_intermediates:  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the mould cavity.
+    if (
+        args.save_scad_intermediates
+    ):  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the mould cavity.
         scad_render_to_file(
             scad_mould, os.path.join(dst_dir, "mould_cavity_" + mould_id + ".scad")
         )
@@ -393,7 +390,9 @@ if __name__ == "__main__":
 
     scad_mould = translate([0, 0, baseplate_height])(scad_mould) + scad_baseplate
 
-    if args.save_scad_intermediates:  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the mould cavity with the baseplate.
+    if (
+        args.save_scad_intermediates
+    ):  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the mould cavity with the baseplate.
         scad_render_to_file(
             scad_mould,
             os.path.join(dst_dir, "mould_cavity_w_baseplate_" + mould_id + ".scad"),
@@ -407,9 +406,9 @@ if __name__ == "__main__":
     guides_height = tumour_sz[2] + slguide_height_offset - baseplate_height
     scad_slguide = cube(
         [
-        tumour_sz[0] + 2 * cavity_wall_thickness,  # The slicing guide is as wide as the tumour + the mould cavity walls.
-        guides_thickness,
-        guides_height
+            tumour_sz[0] + 2 * cavity_wall_thickness,  # The slicing guide is as wide as the tumour + the mould cavity walls.
+            guides_thickness,
+            guides_height,
         ]
     )
 
@@ -422,7 +421,9 @@ if __name__ == "__main__":
         ]
     )(scad_slguide)
 
-    if args.save_scad_intermediates:  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the slicing guide.
+    if (
+        args.save_scad_intermediates
+    ):  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the slicing guide.
         scad_render_to_file(
             scad_slguide, os.path.join(dst_dir, "slicing_guide_" + mould_id + ".scad")
         )
@@ -434,9 +435,9 @@ if __name__ == "__main__":
     print("\t## Building the orientation guides...", end="")
     scad_orguide = cube(
         [
-        guides_thickness,
-        2 * guides_thickness,  # As it is only two "pillars", y = 2*guideSize.
-        guides_height
+            guides_thickness,
+            2 * guides_thickness,  # As it is only two "pillars", y = 2*guideSize.
+            guides_height,
         ]
     )
 
@@ -458,7 +459,9 @@ if __name__ == "__main__":
         ]
     )(scad_orguide)
 
-    if args.save_scad_intermediates:  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the orientation guides.
+    if (
+        args.save_scad_intermediates
+    ):  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the orientation guides.
         scad_render_to_file(
             scad_orguide_left + scad_orguide_right,
             os.path.join(dst_dir, "orientation_guides_" + mould_id + ".scad"),
@@ -512,10 +515,10 @@ if __name__ == "__main__":
             0,
         ]
     )(scad_orguide_baseplate)
-    
+
     # (2.B) Add it to the left orientation guide structure:
     scad_orguide_left += scad_orguide_baseplate_left
-    
+
     # (2.C) Place the baseplate on the right:
     scad_orguide_baseplate_right = translate(
         [
@@ -524,7 +527,7 @@ if __name__ == "__main__":
             0,
         ]
     )(scad_orguide_baseplate)
-    
+
     # (2.C) Add it to the right orientation guide structure:
     scad_orguide_right += scad_orguide_baseplate_right
     print(" OK")
@@ -533,7 +536,9 @@ if __name__ == "__main__":
     print("\t## Adding slicing and orientation guides to the mould...", end="")
     scad_mould += scad_slguide + scad_orguide_left + scad_orguide_right
 
-    if args.save_scad_intermediates:  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the complete mould without slits.
+    if (
+        args.save_scad_intermediates
+    ):  # OPT: Add "--save_scad_intermediates" to the command line to save the scad file of the complete mould without slits.
         scad_render_to_file(
             scad_mould,
             os.path.join(dst_dir, "complete_mould_no_slits_" + mould_id + ".scad"),
