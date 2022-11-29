@@ -4,3 +4,7 @@
 
 #  3D Moulds for Ovarian Cancer
 
+Repository for the publication "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study"
+
+## Dependencies
+The code in this repository runs on Python. Necessary libraries are in the [requirements.txt](requirements.txt) file.
