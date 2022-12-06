@@ -13,7 +13,7 @@ import os
 import numpy as np
 import pydicom
 import scipy.ndimage
-from rt_utils import RTStructBuilder
+from rt_utils import RTStruct, RTStructBuilder
 
 
 #%% -----------------FUNCTIONS--------------
@@ -43,10 +43,15 @@ def get_roi_masks(dicom_info_dict):
                   dicom_series_path=path_to_dicom,
                   rt_struct_path=rt_struct_path
                 )
-    tumour_mask          = rt_struct.get_roi_mask_by_name(dicom_info_dict['tumour_roi_name'])
-    base_mask            = rt_struct.get_roi_mask_by_name(dicom_info_dict['base_roi_name'])
-    ref_point_1_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_1_roi_name'])
-    ref_point_2_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_2_roi_name'])
+    try:
+        tumour_mask          = rt_struct.get_roi_mask_by_name(dicom_info_dict['tumour_roi_name'])
+        base_mask            = rt_struct.get_roi_mask_by_name(dicom_info_dict['base_roi_name'])
+        ref_point_1_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_1_roi_name'])
+        ref_point_2_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_2_roi_name'])
+    
+    except RTStruct.ROIException:
+        print("\nERROR! Specified ROI(s) do not exist in the DICOM-RT file, which contains: ", rt_struct.get_roi_names())
+        raise SystemExit(0)
 
     return tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask
 
