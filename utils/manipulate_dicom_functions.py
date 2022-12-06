@@ -28,13 +28,13 @@ def get_roi_masks(dicom_info_dict):
             roi_masks <numpy.ndarray>:  Boolean array of the ROIs.
     """
 
-    path_to_dicom = dicom_info_dict['path_to_dicom']
+    path_to_dicom = dicom_info_dict["path_to_dicom"]
     # Find the DICOM-RT
     for dcmfile in os.listdir(path_to_dicom):
-        if not dcmfile.startswith('.'):
+        if not dcmfile.startswith("."):
             dcmfile_path = os.path.join(path_to_dicom, dcmfile)
             ds = pydicom.dcmread(dcmfile_path)
-            if ds.Modality == 'RTSTRUCT':
+            if ds.Modality == "RTSTRUCT":
                 rt_struct_path = dcmfile_path
                 break
 
@@ -44,13 +44,16 @@ def get_roi_masks(dicom_info_dict):
                   rt_struct_path=rt_struct_path
                 )
     try:
-        tumour_mask          = rt_struct.get_roi_mask_by_name(dicom_info_dict['tumour_roi_name'])
-        base_mask            = rt_struct.get_roi_mask_by_name(dicom_info_dict['base_roi_name'])
-        ref_point_1_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_1_roi_name'])
-        ref_point_2_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict['ref_point_2_roi_name'])
+        tumour_mask          = rt_struct.get_roi_mask_by_name(dicom_info_dict["tumour_roi_name"])
+        base_mask            = rt_struct.get_roi_mask_by_name(dicom_info_dict["base_roi_name"])
+        ref_point_1_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict["ref_point_1_roi_name"])
+        ref_point_2_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict["ref_point_2_roi_name"])
     
     except RTStruct.ROIException:
-        print("\nERROR! Specified ROI(s) do not exist in the DICOM-RT file, which contains: ", rt_struct.get_roi_names())
+        print(
+            "\nERROR! Specified ROI(s) do not exist in the DICOM-RT file, which contains: ",
+            rt_struct.get_roi_names(),
+        )
         raise SystemExit(0)
 
     return tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask
@@ -69,7 +72,9 @@ def reslice(array, scale_x, scale_y, scale_z):
                                     array to (1, 1, 1) mm voxel size.
     """
 
-    return scipy.ndimage.zoom(array, (scale_x, scale_y, scale_z), order=0, prefilter=False)
+    return scipy.ndimage.zoom(
+        array, (scale_x, scale_y, scale_z), order=0, prefilter=False
+    )
 
 
 def get_centroid(mask, val=True):
