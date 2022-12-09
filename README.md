@@ -16,9 +16,9 @@ pip install -r requirements.txt
 * *dicom\_info.yaml*: yaml file specifying:
   1. Path to the folder that contains both the DICOM images files and the DICOM-RT file.
   2. Names given to the ROIs (tumour, base, reference points) in the DICOM-RT file.
-* *tunable\_parameters.yaml*: yaml file specifying the values each of tunable parameter illustrated in Figure X of the manuscript.
+* [*tunable\_parameters.yaml*](tunable_parameters.yaml)*: yaml file specifying the values each of tunable parameter illustrated in Figure X of the manuscript.
 
-Empty templates of both files are provided.
+Empty templates (with default suggested values for tunable_parameters.yaml) of both files are provided.
 
 ## Structure
 ### Usage of `run.py`:
