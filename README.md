@@ -47,3 +47,30 @@ A string of your mould ID is the only required input (i.e. if happy with the def
 -  `--display                 ` If added, the code displays the masks for the ROIs before and after rotation.
 -  `--save_preproc            ` If added, the code saves the tumour stl mesh before smoothing.
 -  `--save_scad_intermediates ` If added, the code saves the scad files of each individual parts of the mould (i.e. the mould cavity, mould cavity + baseplate, slicing guide, orientation guides, and complete mould without slits).
+
+## Post-processing
+Most 3D printing softwares require a STL as input. Below are the instructions to convert the mould SCAD file to STL and to fix the appearance of the tumour replica if required.
+
+### SCAD to STL Conversion
+#### Dependencies
+*  [**OpenSCAD**](https://openscad.org/downloads.html)
+
+#### Instructions
+1. Open the mould SCAD file.
+2. Design > Render
+3. File > Export > Export as STL...
+
+### Tumour replica STL Fixing
+If you wish to print the tumour replica, you may sometimes observe the file cannot be printed as it contains holes. Below are some instructions with open source software packages to fix it.
+
+#### Dependencies
+* [**PrusaSlicer**](https://www.prusa3d.com/page/prusaslicer_424/)
+* [**Meshmixer**](https://meshmixer.com/download.html)
+
+#### Instructions
+1. On **PrusaSlicer**:
+    1. Click on File > Repair STL file... and import the STL tumour replica. It will be saved as an OBJ file.
+1. On **MeshMixer**:
+    1. Import OBJ file
+    2. Edit > Make solid > Accept
+    3. File > Export and save it as STL.
