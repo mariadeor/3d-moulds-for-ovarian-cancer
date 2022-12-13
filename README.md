@@ -21,15 +21,20 @@ pip install -r requirements.txt
 Empty templates (with default suggested values for *tunable_parameters.yaml*) of both files are provided.
 
 ## Outputs
+All the results will be stored in a folder named *your-mould-id*:
+* *mould\_your-mould-id.scad*: SCAD file of the generated mould.
+* *tumour\_replica\_your-mould-id.stl*: STL file of the tumour replica.
+* *tumour\_w\_spikes\_your-mould-id.stl*: STL file of the tumour replica that has been modified by replacing the areas above the widest surface by the tumour convex hull on the xy plane so the mould does not close above it. ```ATTN: This file needs to be in the same directory as the SCAD mould because it is used for its generation.```
+* *yaml\_inputs*: A subfolder with the yaml files used for the mould generation.
 
 ## Usage
 `run.py` is the main script. It is composed of different parts that handle inputs import, DICOM re-slicing and rotation, transformation from DICOM to World Coordinate System (WCS) and tumour and mould modelling. This script connects all the steps in the pipeline and calls to specific functions defined in [utils](utils).
 
 ```bash
-python run.py your-mould-id [OPTIONS]
+python run.py your-mould-id [OPTIONS] [FLAGS]
 ```
 
-A string of your mould ID is the only required input. Additionally, there are multiple options (with default values) and flags that can be passed to this script.
+A string of your mould ID is the only required input (i.e. if happy with the default values you can simply run ```python run.py your-mould-id```). Additionally, there are multiple options (with default values) and flags that can be passed to this script.
 ### Options:
 -  `--tunable_parameters PATH ` Path to the yaml file specifying the tunable parameters. By default, this is simply *tunable\_parameters.yaml* and calls to file under this name in the working directory.
 -  `--dicom_info PATH         ` Path to the yaml file specifying the DICOM information. By default, this is simply *dicom\_info.yaml* and calls to file under this name in the same directory as the code.
