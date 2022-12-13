@@ -271,7 +271,7 @@ tumour_rotated[rois_combined_rotated == 1] = 1
 
 # Crop the scan to the tumour VOI bounding box for increased computational speed:
 rmin, rmax, cmin, cmax, zmin, zmax = get_box(tumour_rotated)
-tumour_rotated = tumour_rotated[rmin:rmax, cmin:cmax, zmin:zmax]
+tumour_rotated = tumour_rotated[rmin:rmax + 1, cmin:cmax + 1, zmin:zmax + 1]
 
 print("Rotation complete.")
 
