@@ -18,7 +18,7 @@ pip install -r requirements.txt
   2. Names given to the ROIs (tumour, base, reference points) in the DICOM-RT file.
 * [**tunable\_parameters.yaml**](tunable_parameters.yaml): yaml file specifying the values each of tunable parameter illustrated in Figure X of the manuscript.
 
-Empty templates (with default suggested values for *tunable_parameters.yaml*) of both files are provided.
+Empty templates (or filled with suggested values for *tunable_parameters.yaml*) of both files are provided.
 
 ## Outputs
 All the results will be stored in a folder named *your-mould-id*:
@@ -26,6 +26,8 @@ All the results will be stored in a folder named *your-mould-id*:
 * **tumour\_replica\_your-mould-id.stl**: STL file of the tumour replica.
 * **tumour\_w\_spikes\_your-mould-id.stl**: STL file of the tumour replica that has been modified by replacing the areas above the widest surface by the tumour convex hull on the xy plane so the mould does not close above it (shown in Figure X of the manuscript). *ATTN: This file needs to be in the same directory as the SCAD mould because it is used for its generation.*
 * **yaml\_inputs**: A subfolder with the yaml files used for the mould generation.
+
+Optionally, the pre-processed tumour replica or intermediate SCAD files of the independent structures of the mould can be saved, as explained below (Usage, Flags). The filenames of these are self-explanatory.
 
 ## Usage
 `run.py` is the main script. It is composed of different parts that handle inputs import, DICOM re-slicing and rotation, transformation from DICOM to World Coordinate System (WCS) and tumour and mould modelling. This script connects all the steps in the pipeline and calls to specific functions defined in [utils](utils).
