@@ -11,12 +11,12 @@ import math
 import os
 import shutil
 from datetime import datetime
-from matplotlib.colors import ListedColormap
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pydicom
 import scipy.ndimage
+from matplotlib.colors import ListedColormap
 from skimage.draw import polygon2mask
 from solid import (
     cube,
@@ -197,12 +197,12 @@ print("Re-slicing complete.")
 # 3. ROTATION
 # ------------------------------------------
 # Create a label mask with all the ROIs:
-scan_sz         = np.shape(tumour_mask)
-rois_combined   = np.zeros(scan_sz)
-rois_combined[base_mask]        = 3
+scan_sz = np.shape(tumour_mask)
+rois_combined = np.zeros(scan_sz)
+rois_combined[base_mask] = 3
 rois_combined[ref_point_1_mask] = 2
 rois_combined[ref_point_2_mask] = 4
-rois_combined[tumour_mask]      = 1
+rois_combined[tumour_mask] = 1
 
 # Find the slices where the tumour is segmented:
 tumour_slices = np.unique(np.argwhere(tumour_mask)[:, 2])
@@ -278,7 +278,7 @@ tumour_rotated[rois_combined_rotated == 1] = 1
 
 # Crop the scan to the tumour VOI bounding box for increased computational speed:
 rmin, rmax, cmin, cmax, zmin, zmax = get_box(tumour_rotated)
-tumour_rotated = tumour_rotated[rmin:rmax + 1, cmin:cmax + 1, zmin:zmax + 1]
+tumour_rotated = tumour_rotated[rmin : rmax + 1, cmin : cmax + 1, zmin : zmax + 1]
 
 print("Rotation complete.")
 
@@ -658,7 +658,9 @@ print(
 # Add an inverted "T" to each slice to facilitate the co-registration that marks the line of the base and the orientation incision.
 tumour_outlines = tumour_rotated.copy()
 
-cmap = ListedColormap(["None", "cyan", "blue", "red"])  # Create a custom colourmap (pixels equal to 0 will have 'None' value, pixels equal to 1 'cyan'...).
+cmap = ListedColormap(
+    ["None", "cyan", "blue", "red"]
+)  # Create a custom colourmap (pixels equal to 0 will have "None" value, pixels equal to 1 will be "cyan"...).
 
 tumour_outlines[tumour_outlines.shape[0]-1, :, :] = 2  # Marking of the base in blue (2).
 
@@ -671,15 +673,21 @@ outlines_dst_dir = os.path.join(dst_dir, "tumour_slices_outlines")
 os.mkdir(outlines_dst_dir)
 
 cm = 1 / 2.54  # Centimeters to inches
-figsize = (tumour_outlines.shape[1] * cm / 10), (tumour_outlines.shape[0] * cm / 10)  # The outlines are scaled to the expected tumour slices size in the real world.
+figsize = (
+    (tumour_outlines.shape[1] * cm / 10),
+    (tumour_outlines.shape[0] * cm / 10),
+)  # The outlines are scaled to the expected tumour slices size in the real world.
 for x in slicing_slits_positions:
-    x += tumour_rotated.shape[2]/2
+    x += tumour_rotated.shape[2] / 2
     curr_slice = tumour_outlines[:, :, round(x)]
-    
+
     matfig = plt.figure(figsize=figsize)
     plt.matshow(curr_slice, cmap=cmap, aspect="auto", fignum=matfig.number)
     plt.axis("off")
-    
-    plt.savefig(os.path.join(outlines_dst_dir, "Slice_" + str(matfig.number) + ".png"), transparent=True)
+
+    plt.savefig(
+        os.path.join(outlines_dst_dir, "Slice_" + str(matfig.number) + ".png"),
+        transparent=True,
+    )
     plt.show(block=False)
     plt.pause(0.001)
