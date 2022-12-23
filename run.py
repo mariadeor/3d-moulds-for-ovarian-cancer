@@ -11,6 +11,7 @@ import math
 import os
 import shutil
 from datetime import datetime
+from matplotlib.colors import ListedColormap
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -175,7 +176,13 @@ ds = pydicom.dcmread(
 )  # Read DICOM metadata.
 scale_x = ds.PixelSpacing[0]
 scale_y = ds.PixelSpacing[1]
-scale_z = ds.SliceThickness
+try:
+    if ds.SliceThickness > ds.SpacingBetweenSlices:
+        scale_z = ds.SpacingBetweenSlices
+    else:
+        scale_z = ds.SliceThickness
+except AttributeError:
+    scale_z = ds.SliceThickness
 
 tumour_mask = reslice(tumour_mask, scale_x, scale_y, scale_z)
 base_mask = reslice(base_mask, scale_x, scale_y, scale_z)
@@ -564,10 +571,13 @@ scad_slicing_slit_central = translate(
 )(scad_slicing_slit)
 scad_mould -= scad_slicing_slit_central
 
+slicing_slits_positions = [0]  # Initialise a list to keep the slicing slits positions for the generation of the tumour outlines.
+
 # Make the rest of the cuts:
 nbr_cuts_each_half_x = math.floor(tumour_sz[0] / 2 / slice_thickness)
 for cut in range(nbr_cuts_each_half_x):
     slit_x_position = slice_thickness * (cut + 1)
+    slicing_slits_positions.extend([slit_x_position, -slit_x_position])  # Append the slicing slits positions.
     scad_mould -= translate(
         [
             -slit_thickness / 2 + slit_x_position,  # Cuts on the left.
@@ -582,6 +592,7 @@ for cut in range(nbr_cuts_each_half_x):
             baseplate_height,
         ]
     )(scad_slicing_slit)
+slicing_slits_positions.sort(reverse = True)  # Sort the slicing slits positions list. It is reversed so Cranial is first during the tumour outlines printing.
 
 # Create the slit structure for the orientation slit:
 scad_orientation_slit = cube(
@@ -636,3 +647,39 @@ scad_render_to_file(scad_mould, os.path.join(dst_dir, "mould_" + mould_id + ".sc
 print(" OK")
 
 print("Mould modelling complete.")
+
+#%% ----------------------------------------
+# 7. PRINT TUMOUR OUTLINES
+# ------------------------------------------
+print(
+    "\n# ------------------------------------------ \n# 7. PRINTING TUMOUR OUTLINES \n# ------------------------------------------"
+)
+
+# Add an inverted "T" to each slice to facilitate the co-registration that marks the line of the base and the orientation incision.
+tumour_outlines = tumour_rotated.copy()
+
+cmap = ListedColormap(["None", "cyan", "blue", "red"])  # Create a custom colourmap (pixels equal to 0 will have 'None' value, pixels equal to 1 'cyan'...).
+
+tumour_outlines[tumour_outlines.shape[0]-1, :, :] = 2  # Marking of the base in blue (2).
+
+orientation_incision_position = round(tumour_outlines.shape[1] / 2) - 1
+tumour_outlines[:, orientation_incision_position, :] = 2  # Marking of the orientation incision position in blue (2).
+tumour_outlines[0:round(tumour_outlines.shape[0] - cavity_height + depth_orslit), orientation_incision_position, :] = 3  # Marking of the orientation incision cut depth in red (3).
+
+# Plot and save the outlines
+outlines_dst_dir = os.path.join(dst_dir, "tumour_slices_outlines")
+os.mkdir(outlines_dst_dir)
+
+cm = 1 / 2.54  # Centimeters to inches
+figsize = (tumour_outlines.shape[1] * cm / 10), (tumour_outlines.shape[0] * cm / 10)  # The outlines are scaled to the expected tumour slices size in the real world.
+for x in slicing_slits_positions:
+    x += tumour_rotated.shape[2]/2
+    curr_slice = tumour_outlines[:, :, round(x)]
+    
+    matfig = plt.figure(figsize=figsize)
+    plt.matshow(curr_slice, cmap=cmap, aspect="auto", fignum=matfig.number)
+    plt.axis("off")
+    
+    plt.savefig(os.path.join(outlines_dst_dir, "Slice_" + str(matfig.number) + ".png"), transparent=True)
+    plt.show(block=False)
+    plt.pause(0.001)
