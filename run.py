@@ -658,7 +658,7 @@ print(
 original_central_slice_idx = math.floor(np.shape(original_tumour_slices)[0] / 2)  # Find the central original DICOM slice.
 slices_sampling = math.floor(slice_thickness / scale_z)  # Find the relationship between tumour slice thickness and DICOM slice thickness.
 original_tumour_slices_sampled = np.union1d(original_tumour_slices[original_central_slice_idx::slices_sampling],
-                                            original_tumour_slices[original_central_slice_idx:0:-slices_sampling])  # Sample the DICOM slices from the center.
+                                            original_tumour_slices[original_central_slice_idx::-slices_sampling])  # Sample the DICOM slices from the center.
 
 # Add an inverted "T" to each slice to facilitate the co-registration that marks the line of the base and the orientation incision.
 tumour_outlines = tumour_rotated.copy()
