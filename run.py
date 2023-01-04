@@ -177,12 +177,11 @@ ds = pydicom.dcmread(
 scale_x = ds.PixelSpacing[0]
 scale_y = ds.PixelSpacing[1]
 try:
-    if ds.SliceThickness > ds.SpacingBetweenSlices:
-        scale_z = ds.SpacingBetweenSlices
-    else:
-        scale_z = ds.SliceThickness
+    scale_z = ds.SpacingBetweenSlices if ds.SliceThickness > ds.SpacingBetweenSlices else ds.SliceThickness
 except AttributeError:
     scale_z = ds.SliceThickness
+
+original_tumour_slices = np.sort(np.shape(tumour_mask)[2] - np.unique(np.argwhere(tumour_mask)[:, 2]))
 
 tumour_mask = reslice(tumour_mask, scale_x, scale_y, scale_z)
 base_mask = reslice(base_mask, scale_x, scale_y, scale_z)
@@ -655,6 +654,12 @@ print(
     "\n# ------------------------------------------ \n# 7. PRINTING TUMOUR OUTLINES \n# ------------------------------------------"
 )
 
+# Match the closest DICOM image to every slice
+original_central_slice_idx = math.floor(np.shape(original_tumour_slices)[0] / 2)  # Find the central original DICOM slice.
+slices_sampling = math.floor(slice_thickness / scale_z)  # Find the relationship between tumour slice thickness and DICOM slice thickness.
+original_tumour_slices_sampled = np.union1d(original_tumour_slices[original_central_slice_idx::slices_sampling],
+                                            original_tumour_slices[original_central_slice_idx:0:-slices_sampling])  # Sample the DICOM slices from the center.
+
 # Add an inverted "T" to each slice to facilitate the co-registration that marks the line of the base and the orientation incision.
 tumour_outlines = tumour_rotated.copy()
 
@@ -677,7 +682,7 @@ figsize = (
     (tumour_outlines.shape[1] * cm / 10),
     (tumour_outlines.shape[0] * cm / 10),
 )  # The outlines are scaled to the expected tumour slices size in the real world.
-for x in slicing_slits_positions:
+for idx, x in enumerate(slicing_slits_positions):
     x += tumour_rotated.shape[2] / 2
     curr_slice = tumour_outlines[:, :, round(x)]
 
@@ -686,7 +691,7 @@ for x in slicing_slits_positions:
     plt.axis("off")
 
     plt.savefig(
-        os.path.join(outlines_dst_dir, "Slice_" + str(matfig.number) + ".png"),
+        os.path.join(outlines_dst_dir, "Slice_" + str(matfig.number) + "_DICOM_" + str(original_tumour_slices_sampled[idx]) + ".png"),
         transparent=True,
     )
     plt.show(block=False)
