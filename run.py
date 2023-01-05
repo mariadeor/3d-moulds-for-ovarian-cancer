@@ -225,7 +225,7 @@ if (
 
         plt.matshow(curr_rois_combined_slice)
         plt.axis("off")
-        plt.title("Imported and re-sliced VOIs \nSlice " + str(z))
+        plt.title("Imported and re-sliced VOIs")
 
         plt.show(block=False)
         plt.pause(0.001)
@@ -273,7 +273,7 @@ if (
 
         plt.matshow(curr_rois_combined_slice)
         plt.axis("off")
-        plt.title("Rotated VOIs \nSlice " + str(z))
+        plt.title("Rotated VOIs")
 
         plt.show(block=False)
         plt.pause(0.001)
