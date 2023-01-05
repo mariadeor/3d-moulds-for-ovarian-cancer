@@ -117,6 +117,11 @@ print("\t## Extracting VOIs...", end="")
 tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(
     dicom_info_dict
 )
+
+original_tumour_slices = np.unique(np.argwhere(tumour_mask)[:, 2])
+original_tumour_slices = np.shape(tumour_mask)[2] - original_tumour_slices  # DICOM slices are numbered in reverse.
+original_tumour_slices = np.sort(original_tumour_slices)
+
 print(" OK")
 
 # Create path_to_results if it does not exist:
@@ -177,11 +182,13 @@ ds = pydicom.dcmread(
 scale_x = ds.PixelSpacing[0]
 scale_y = ds.PixelSpacing[1]
 try:
-    scale_z = ds.SpacingBetweenSlices if ds.SliceThickness > ds.SpacingBetweenSlices else ds.SliceThickness
+    scale_z = (
+        ds.SpacingBetweenSlices
+        if ds.SliceThickness > ds.SpacingBetweenSlices
+        else ds.SliceThickness
+    )
 except AttributeError:
     scale_z = ds.SliceThickness
-
-original_tumour_slices = np.sort(np.shape(tumour_mask)[2] - np.unique(np.argwhere(tumour_mask)[:, 2]))
 
 tumour_mask = reslice(tumour_mask, scale_x, scale_y, scale_z)
 base_mask = reslice(base_mask, scale_x, scale_y, scale_z)
@@ -691,7 +698,14 @@ for idx, x in enumerate(slicing_slits_positions):
     plt.axis("off")
 
     plt.savefig(
-        os.path.join(outlines_dst_dir, "Slice_" + str(matfig.number) + "_DICOM_" + str(original_tumour_slices_sampled[idx]) + ".png"),
+        os.path.join(
+            outlines_dst_dir,
+            "Slice_"
+            + str(matfig.number)
+            + "_DICOM_"
+            + str(original_tumour_slices_sampled[idx])
+            + ".png",
+        ),
         transparent=True,
     )
     plt.show(block=False)
