@@ -24,6 +24,7 @@ Empty templates (or filled with suggested values for *tunable_parameters.yaml*) 
 All the results will be stored in a folder named *your-mould-id*:
 * **mould\_your-mould-id.scad**: SCAD file of the generated mould.
 * **tumour\_replica\_your-mould-id.stl**: STL file of the tumour replica.
+* **tumour\_slices\_outlines**: A subfolder with the contours of each tumour slice. The images are png and have the dimensions of the expected sample. Each image filename contains the tissue slice number of the mould and the corresponding DICOM slice.
 * **tumour\_w\_spikes\_your-mould-id.stl**: STL file of the tumour replica that has been modified by replacing the areas above the widest surface by the tumour convex hull on the xy plane so the mould does not close above it (shown in Figure X of the manuscript). *ATTN: This file needs to be in the same directory as the SCAD mould because it is used for its generation.*
 * **yaml\_inputs**: A subfolder with the yaml files used for the mould generation.
 
