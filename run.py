@@ -655,19 +655,21 @@ print(" OK")
 print("Mould modelling complete.")
 
 #%% ----------------------------------------
-# 7. PRINT TUMOUR OUTLINES
+# 7. PRINT TUMOUR SLICES OUTLINES
 # ------------------------------------------
 print(
     "\n# ------------------------------------------ \n# 7. PRINTING TUMOUR OUTLINES \n# ------------------------------------------"
 )
 
-# Match the closest DICOM image to every slice
+print("\t## Matching the closest DICOM slice to each mould tumour slice...", end="")
 original_central_slice_idx = math.floor(np.shape(original_tumour_slices)[0] / 2)  # Find the central original DICOM slice.
 slices_sampling = math.floor(slice_thickness / scale_z)  # Find the relationship between tumour slice thickness and DICOM slice thickness.
 original_tumour_slices_sampled = np.union1d(original_tumour_slices[original_central_slice_idx::slices_sampling],
                                             original_tumour_slices[original_central_slice_idx::-slices_sampling])  # Sample the DICOM slices from the center.
+print(" OK")
+print("\t\tWARNING: Please visually assess the DICOM-tissue slice matching as an offset may be expected.")
 
-# Add an inverted "T" to each slice to facilitate the co-registration that marks the line of the base and the orientation incision.
+print("\t## Marking the base and the orientation incision...", end="")
 tumour_outlines = tumour_rotated.copy()
 
 cmap = ListedColormap(
@@ -679,7 +681,9 @@ tumour_outlines[tumour_outlines.shape[0]-1, :, :] = 2  # Marking of the base in 
 orientation_incision_position = round(tumour_outlines.shape[1] / 2) - 1
 tumour_outlines[:, orientation_incision_position, :] = 2  # Marking of the orientation incision position in blue (2).
 tumour_outlines[0:round(tumour_outlines.shape[0] - cavity_height + depth_orslit), orientation_incision_position, :] = 3  # Marking of the orientation incision cut depth in red (3).
+print(" OK")
 
+print("\t## Plotting and saving the tumour slices outlines...", end="")
 # Plot and save the outlines
 outlines_dst_dir = os.path.join(dst_dir, "tumour_slices_outlines")
 os.mkdir(outlines_dst_dir)
@@ -710,3 +714,10 @@ for idx, x in enumerate(slicing_slits_positions):
     )
     plt.show(block=False)
     plt.pause(0.001)
+print(" OK")
+
+print("Printing tumour slices outlines complete.")
+
+print(
+    "\n# ------------------------------------------ \n# HAPPY 3D PRINTING! \n# ------------------------------------------"
+)
