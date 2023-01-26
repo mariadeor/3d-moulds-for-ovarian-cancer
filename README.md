@@ -22,7 +22,7 @@ pip install -r requirements.txt
   |:---:|
   | *Required ROIs are: the tumour (delineated on every slice where the lesion appears) and the desired location of the base, together with two reference points at the end of it as shown in the Figure above. The base and reference points need to be segmented only on a few slices (e.g. 5).* |
 
-Templates of both files are provided for the example case.
+Both files are provided for the example case and can be further used as templates.
 
 ## Outputs
 All the results will be stored in a folder named *your-mould-id*:
@@ -52,6 +52,21 @@ A string of your mould ID is the only required input (i.e. if happy with the def
 -  `--display                 ` If added, the code displays the masks for the ROIs before and after rotation.
 -  `--save_preproc            ` If added, the code saves the tumour stl mesh before smoothing.
 -  `--save_scad_intermediates ` If added, the code saves the scad files of each individual parts of the mould (i.e. the mould cavity, mould cavity + baseplate, slicing guide, orientation guides, and complete mould without slits).
+
+*****************************************************************************************************************************************************
+**Example case**
+
+In the [example_case](data/example_case) folder, the DICOM-RT segmentations are provided to generate a mould for a case from [TCIA](https://www.cancerimagingarchive.net) (The Cancer Imaging Archive). 
+
+To download images from TCIA, you need to download the app [NBIA Data Retriever](https://wiki.nci.nih.gov/display/NBIA). Once it is installed, double click on the manifesto in [data](data) and it should start downloading the CT scan used for this example case. Move the DICOM files to [example_case](data/example_case) together with the provided segmentation.
+
+From the terminal, run:
+```bash
+python run.py example_case
+```
+
+Results will be saved into the [results](results) folder in a subfolder named *example\_case*. Compare your outputs to those in [here](results/example_case_provided_results).
+*****************************************************************************************************************************************************
 
 ## Post-processing
 Most 3D printing softwares require a STL as input. Below are the instructions to convert the mould SCAD file to STL and to fix the appearance of the tumour replica if required.
