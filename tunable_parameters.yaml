@@ -5,8 +5,8 @@
 # DATE          Nov 2022
 #####################################################################
 
-# This is a test file for checking empty tunable parameters: baseplate_xy_offset and guides_thickness are empty.
-# TODO: The parameters appear in the same order as they do in Figure X in the manuscript "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study" (2022) by Delgado-Ortet*, Reinius* et al.
+# This file allows the user to customise the mould.
+# The tunable parameters appear in the same order as they do in Figure 10 of the manuscript "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study" (2022) by Delgado-Ortet*, Reinius* et al. (doi: 10.3389/fonc.2023.1085874)
 
 slice_thickness:        5   # [mm]      # Slice thickness                                                           # SUGGESTED: 5
 slit_thickness:         1   # [mm]      # Width of the slit the knife goes through                                  # SUGGESTED: 1
