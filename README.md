@@ -16,7 +16,7 @@ pip install -r requirements.txt
 * [**dicom\_info.yaml**](dicom_info.yaml): yaml file specifying:
   1. Path to the folder that contains both the DICOM images files and the DICOM-RT file.
   2. Names given to the ROIs (tumour, base, reference points) in the DICOM-RT file.
-  |![Segmented slice.](res/segmentation.png) |
+  | ![Segmented slice.](res/segmentation.png) |
   |:--:|
   | *Required ROIs are: the tumour (delineated on every slice where the lesion appears) and the desired location of the base, together with two reference points at the end of it as shown in the figure. The base and reference points need to be segmented only on a few slices (e.g. 5).* |
 * [**tunable\_parameters.yaml**](tunable_parameters.yaml): yaml file specifying the values each of tunable parameter illustrated in Figure X of the manuscript.
