@@ -4,7 +4,7 @@
 
 #  3D Moulds for Ovarian Cancer
 
-Repository for the publication "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study"
+Repository for the publication "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study" (2022) by Delgado-Ortet\*, Reinius\* et al. (doi: 10.3389/fonc.2023.1085874).
 
 ## Dependencies
 The code in this repository runs on Python and has been developed and tested using Python 3.8.13. Necessary libraries and versions are in the [requirements.txt](requirements.txt) file. Required libraries can be installed by running:
@@ -13,6 +13,7 @@ pip install -r requirements.txt
 ```
 
 ## Inputs
+* [**tunable\_parameters.yaml**](tunable_parameters.yaml): yaml file specifying the values each of tunable parameter illustrated in Figure 3 of the manuscript.
 * [**dicom\_info.yaml**](dicom_info.yaml): yaml file specifying:
   1. Path to the folder that contains both the DICOM images files and the DICOM-RT file.
   2. Names given to the ROIs (tumour, base, reference points) in the DICOM-RT file.
@@ -21,9 +22,7 @@ pip install -r requirements.txt
   |:---:|
   | *Required ROIs are: the tumour (delineated on every slice where the lesion appears) and the desired location of the base, together with two reference points at the end of it as shown in the Figure above. The base and reference points need to be segmented only on a few slices (e.g. 5).* |
 
-* [**tunable\_parameters.yaml**](tunable_parameters.yaml): yaml file specifying the values each of tunable parameter illustrated in Figure X of the manuscript.
-
-Empty templates (or filled with suggested values for *tunable_parameters.yaml*) of both files are provided.
+Templates of both files are provided for the example case.
 
 ## Outputs
 All the results will be stored in a folder named *your-mould-id*:
