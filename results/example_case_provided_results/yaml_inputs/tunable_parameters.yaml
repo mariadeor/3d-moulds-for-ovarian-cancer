@@ -1,0 +1,20 @@
+#####################################################################
+# AUTHOR        Maria Delgado-Ortet
+# CONTACT       md863@cam.ac.uk
+# INSTITUTION   Department of Radiology, University of Cambridge
+# DATE          Nov 2022
+#####################################################################
+
+# This file allows the user to customise the mould.
+# The tunable parameters appear in the same order as they do in Figure 3 of the manuscript "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study" (2022) by Delgado-Ortet*, Reinius* et al. (doi: 10.3389/fonc.2023.1085874)
+
+slice_thickness:        5   # [mm]      # Slice thickness                                                           # SUGGESTED: 5
+slit_thickness:         1   # [mm]      # Width of the slit the knife goes through                                  # SUGGESTED: 1
+guides_thickness:       10  # [mm]      # Thickness of the slicing and orientation guides                           # SUGGESTED: 10
+cavity_wall_thickness:  5   # [mm]      # Thickness of the mould cavity walls                                       # SUGGESTED: 5
+dist_orguide_baseplate: 30  # [mm]      # Distance between the orientation guide and the mould baseplate            # SUGGESTED: 30
+baseplate_height:       4   # [mm]      # Baseplate height                                                          # SUGGESTED: 4
+baseplate_xy_offset:    5   # [mm]      # Baseplate offset on the xy plane                                          # SUGGESTED: 5
+cavity_height_pct:      0.7 # [0, 1]    # Percentage of the tumour height to be covered by the mould cavity         # SUGGESTED: 0.7
+slguide_height_offset:  5   # [mm]      # Slicing guide height offset from the highest point of the mould cavity    # SUGGESTED: 5
+depth_orslit:           2   # [mm]      # Depth of the slit cut from the highest point of the mould cavity          # SUGGESTED: 2
