@@ -35,7 +35,7 @@ All the results will be stored in a folder named *your-mould-id*:
 Optionally, the pre-processed tumour replica or intermediate SCAD files of the independent structures of the mould can be saved, as explained below (Usage, Flags). The filenames of these are self-explanatory.
 
 ## Usage
-To use the example case provided, please read [below](####Example-case).
+To use the example case provided, please read [below](#### Example-case).
 
 ### Modify the input file
 Do not forget to update/create the input file **dicom\_info.yaml** so it contains the right path to the DICOM images and the segmented ROI names. Modify the other input file, **tunable\_parameters.yaml**, to fully customise your mould.
