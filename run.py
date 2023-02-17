@@ -6,7 +6,6 @@
 #####################################################################
 
 #%% -----------------LIBRARIES--------------
-import argparse
 import math
 import os
 import shutil
@@ -33,6 +32,7 @@ from solid import (
 )
 
 from utils.import_functions import (
+    build_parser,
     check_dicom_info,
     check_tunable_parameters,
     import_yaml,
@@ -51,54 +51,7 @@ from utils.tumour_modelling_function import mesh_and_smooth
 #%% ----------------------------------------
 # ARGUMENT PARSER
 # ------------------------------------------
-parser = argparse.ArgumentParser(description="Let's build a mould!")
-
-parser.add_argument(
-    "mould_id",
-    type=str,
-    help="ID for the mould to be built. The results filenames will contain it",
-)
-
-parser.add_argument(
-    "--tunable_parameters",
-    type=str,
-    default="tunable_parameters.yaml",
-    help="path to the yaml file with the tunable parameters. Specify if different to 'tunable_parameters.yaml'",
-)
-
-parser.add_argument(
-    "--dicom_info",
-    type=str,
-    default="dicom_info.yaml",
-    help="path to the yaml file with the dicom info. Specify if different to 'dicom_info.yaml'",
-)
-
-parser.add_argument(
-    "--results_path",
-    type=str,
-    default="results",
-    help="path to the folder where to save the results. A subfolder under the mould_id name will be created. Specify if different to 'results'",
-)
-
-parser.add_argument(
-    "--display",
-    action="store_true",
-    help="if present, the code displays the maks for the ROIs before and after rotation.",
-)
-
-parser.add_argument(
-    "--save_preproc",
-    action="store_true",
-    help="if present, the code saves the tumour stl mesh before smoothing.",
-)
-
-parser.add_argument(
-    "--save_scad_intermediates",
-    action="store_true",
-    help="if present, the code saves the scad files of each individual parts of the mould.",
-)
-
-args = parser.parse_args()
+args = build_parser()
 
 #%% ----------------------------------------
 # 1. IMPORT INPUTS

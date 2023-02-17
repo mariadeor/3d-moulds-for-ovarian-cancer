@@ -7,12 +7,73 @@
 """Functions for importing and checking input yaml files."""
 
 #%% -----------------LIBRARIES--------------
+import argparse
 import os
 
 import yaml
 
 
 #%% -----------------FUNCTIONS--------------
+def build_parser():
+    """
+    This function builds the parser for the main code to build the 3D moulds.
+
+        OUTPUTS:
+            args <argparse.Namespace>:  Object that contains all the data in the parser.
+    """
+
+    parser = argparse.ArgumentParser(description="Let's build a mould!")
+
+    parser.add_argument(
+        "mould_id",
+        type=str,
+        help="ID for the mould to be built. The results filenames will contain it",
+    )
+
+    parser.add_argument(
+        "--tunable_parameters",
+        type=str,
+        default="tunable_parameters.yaml",
+        help="path to the yaml file with the tunable parameters. Specify if different to 'tunable_parameters.yaml'",
+    )
+
+    parser.add_argument(
+        "--dicom_info",
+        type=str,
+        default="dicom_info.yaml",
+        help="path to the yaml file with the dicom info. Specify if different to 'dicom_info.yaml'",
+    )
+
+    parser.add_argument(
+        "--results_path",
+        type=str,
+        default="results",
+        help="path to the folder where to save the results. A subfolder under the mould_id name will be created. Specify if different to 'results'",
+    )
+
+    parser.add_argument(
+        "--display",
+        action="store_true",
+        help="if present, the code displays the maks for the ROIs before and after rotation.",
+    )
+
+    parser.add_argument(
+        "--save_preproc",
+        action="store_true",
+        help="if present, the code saves the tumour stl mesh before smoothing.",
+    )
+
+    parser.add_argument(
+        "--save_scad_intermediates",
+        action="store_true",
+        help="if present, the code saves the scad files of each individual parts of the mould.",
+    )
+
+    args = parser.parse_args()
+    
+    return args
+
+
 def import_yaml(path_to_file, check_func):
     """
     This function updates the global variables with those defined in a yaml
