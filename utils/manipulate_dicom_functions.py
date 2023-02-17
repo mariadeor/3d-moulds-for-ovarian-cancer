@@ -114,3 +114,18 @@ def get_box(mask):
     zmin, zmax = np.where(z)[0][[0, -1]]
 
     return rmin, rmax, cmin, cmax, zmin, zmax
+
+def get_dicom_slices_idx(mask):
+    """
+    This function returns the position of the DICOM slices where the input mask is.
+        INPUTS:
+            mask <numpy.ndarray>:   Boolean array.
+        OUTPUTS:
+            dicom_slices <numpy.ndarray>:  Array with the DICOM slice indices of the mask.
+    """
+
+    dicom_slices = np.unique(np.argwhere(mask)[:, 2])
+    dicom_slices = np.shape(mask)[2] - dicom_slices  # DICOM slices are numbered in reverse.
+    dicom_slices = np.sort(dicom_slices)
+    
+    return dicom_slices

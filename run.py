@@ -9,7 +9,6 @@
 import math
 import os
 import shutil
-from datetime import datetime
 
 import matplotlib as mpl
 mpl.use('tkagg')
@@ -40,6 +39,7 @@ from utils.import_functions import (
 from utils.manipulate_dicom_functions import (
     get_box,
     get_centroid,
+    get_dicom_slices_idx,
     get_roi_masks,
     reslice,
 )
@@ -73,9 +73,7 @@ tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(
     dicom_info_dict
 )
 
-original_tumour_slices = np.unique(np.argwhere(tumour_mask)[:, 2])
-original_tumour_slices = np.shape(tumour_mask)[2] - original_tumour_slices  # DICOM slices are numbered in reverse.
-original_tumour_slices = np.sort(original_tumour_slices)
+original_tumour_slices = get_dicom_slices_idx(tumour_mask)
 
 print(" OK")
 
