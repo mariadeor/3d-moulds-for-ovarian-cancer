@@ -60,7 +60,7 @@ A string of your mould ID is the only required input (i.e. if happy with the def
 -  `--save_scad_intermediates ` If added, the code saves the scad files of each individual parts of the mould (i.e. the mould cavity, mould cavity + baseplate, slicing guide, orientation guides, and complete mould without slits).
 
 *****************************************************************************************************************************************************
-####Example case
+#### Example case
 
 In the [example_case](data/example_case) folder, the DICOM-RT segmentations are provided to generate a mould for a case from [TCIA](https://www.cancerimagingarchive.net) (The Cancer Imaging Archive). 
 
