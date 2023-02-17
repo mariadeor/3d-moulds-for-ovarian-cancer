@@ -13,7 +13,6 @@ import matplotlib as mpl
 mpl.use('tkagg')
 import matplotlib.pyplot as plt
 import numpy as np
-import pydicom
 import scipy.ndimage
 from matplotlib.colors import ListedColormap
 from skimage.draw import polygon2mask
@@ -41,6 +40,7 @@ from utils.manipulate_dicom_functions import (
     get_box,
     get_centroid,
     get_dicom_slices_idx,
+    get_dicom_voxel_size,
     get_roi_masks,
     reslice,
 )
@@ -91,22 +91,7 @@ print(
 )
 
 print("\t## Re-slicing VOIs to voxel size (1, 1, 1) mm...", end="")
-ds = pydicom.dcmread(
-    os.path.join(
-        dicom_info_dict["path_to_dicom"],
-        os.listdir(dicom_info_dict["path_to_dicom"])[1],
-    )
-)  # Read DICOM metadata.
-scale_x = ds.PixelSpacing[0]
-scale_y = ds.PixelSpacing[1]
-try:
-    scale_z = (
-        ds.SpacingBetweenSlices
-        if ds.SliceThickness > ds.SpacingBetweenSlices
-        else ds.SliceThickness
-    )
-except AttributeError:
-    scale_z = ds.SliceThickness
+scale_x, scale_y, scale_z = get_dicom_voxel_size(dicom_info_dict["path_to_dicom"])
 
 tumour_mask = reslice(tumour_mask, scale_x, scale_y, scale_z)
 base_mask = reslice(base_mask, scale_x, scale_y, scale_z)
