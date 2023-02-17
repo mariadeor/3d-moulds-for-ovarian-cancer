@@ -35,6 +35,12 @@ All the results will be stored in a folder named *your-mould-id*:
 Optionally, the pre-processed tumour replica or intermediate SCAD files of the independent structures of the mould can be saved, as explained below (Usage, Flags). The filenames of these are self-explanatory.
 
 ## Usage
+To use the example case provided, please read [below](####Example-case).
+
+### Modify the input file
+Do not forget to update/create the input file **dicom\_info.yaml** so it contains the right path to the DICOM images and the segmented ROI names. Modify the other input file, **tunable\_parameters.yaml**, to fully customise your mould.
+
+### Run the code
 `run.py` is the main script. It is composed of different parts that handle inputs import, DICOM re-slicing and rotation, transformation from DICOM to World Coordinate System (WCS) and tumour and mould modelling. This script connects all the steps in the pipeline and calls to specific functions defined in [utils](utils).
 
 ```bash
@@ -42,19 +48,19 @@ python run.py your-mould-id [OPTIONS] [FLAGS]
 ```
 
 A string of your mould ID is the only required input (i.e. if happy with the default values you can simply run ```python run.py your-mould-id```). Additionally, there are multiple options (with default values) and flags that can be passed to this script.
-### Options:
+#### Options:
 -  `--tunable_parameters PATH ` Path to the yaml file specifying the tunable parameters. By default, this is simply *tunable\_parameters.yaml* and calls to file under this name in the working directory.
 -  `--dicom_info PATH         ` Path to the yaml file specifying the DICOM information. By default, this is simply *dicom\_info.yaml* and calls to file under this name in the same directory as the code.
 -  `--results_path PATH       ` Path to the folder where to save the results. A subfolder under your-mould-id will be created. By default, this corresponds to a folder called *results* in the working directory.
 -  `-h                        `  Show this help message and exit.
 
-### Flags:
+#### Flags:
 -  `--display                 ` If added, the code displays the masks for the ROIs before and after rotation.
 -  `--save_preproc            ` If added, the code saves the tumour stl mesh before smoothing.
 -  `--save_scad_intermediates ` If added, the code saves the scad files of each individual parts of the mould (i.e. the mould cavity, mould cavity + baseplate, slicing guide, orientation guides, and complete mould without slits).
 
 *****************************************************************************************************************************************************
-**Example case**
+####Example case
 
 In the [example_case](data/example_case) folder, the DICOM-RT segmentations are provided to generate a mould for a case from [TCIA](https://www.cancerimagingarchive.net) (The Cancer Imaging Archive). 
 
