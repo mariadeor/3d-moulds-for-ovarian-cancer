@@ -232,6 +232,9 @@ if (
         plt.show(block=False)
         plt.pause(0.001)
 
+    input("INPUT REQUIRED! Please hit enter to close all figures and continue.")
+    plt.close('all')
+
 print(
     "\n# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------"
 )
@@ -279,6 +282,9 @@ if (
 
         plt.show(block=False)
         plt.pause(0.001)
+    
+    input("INPUT REQUIRED! Please hit enter to close all figures and continue.")
+    plt.close('all')
 
 # Keep only the tumour VOI:
 tumour_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
@@ -717,6 +723,9 @@ for idx, x in enumerate(slicing_slits_positions):
     plt.show(block=False)
     plt.pause(0.001)
 print(" OK")
+
+input("INPUT REQUIRED! Please hit enter to close all figures and continue.")
+plt.close('all')
 
 print("Printing tumour slices outlines complete.")
 
