@@ -70,7 +70,7 @@ def build_parser():
     )
 
     args = parser.parse_args()
-    
+
     return args
 
 
@@ -121,17 +121,17 @@ def check_tunable_parameters(tunable_parameters):
     # Check if there are missing or unrecognised (extra) parameters:
     ## List with all the *expected* tunable parameters:
     required_params = [
-                        'slice_thickness',
-                        'slit_thickness',
-                        'guides_thickness',
-                        'cavity_wall_thickness',
-                        'dist_orguide_baseplate',
-                        'baseplate_height',
-                        'baseplate_xy_offset',
-                        'cavity_height_pct',
-                        'slguide_height_offset',
-                        'depth_orslit'
-                        ]
+        "slice_thickness",
+        "slit_thickness",
+        "guides_thickness",
+        "cavity_wall_thickness",
+        "dist_orguide_baseplate",
+        "baseplate_height",
+        "baseplate_xy_offset",
+        "cavity_height_pct",
+        "slguide_height_offset",
+        "depth_orslit",
+    ]
     ## List with all the the *inputted* parameters:
     input_params = tunable_parameters.keys()
 
@@ -166,18 +166,18 @@ def check_dicom_info(dicom_info):
             raise TypeError(key + " is <" + type(item).__name__ + "> and should be *<str>*. Adding quotes to " + key + " may resolve this issue.")
 
     # Check if path_to_dicom is an existing directory.
-    if not os.path.isdir(dicom_info['path_to_dicom']):
+    if not os.path.isdir(dicom_info["path_to_dicom"]):
         raise OSError("path_to_dicom should be an existing *directory*.")
 
     # Check if there are missing or unrecognised (extra) info bits:
     ## List with all the *expected* info bits:
     required_info = [
-                        'path_to_dicom',
-                        'tumour_roi_name',
-                        'base_roi_name',
-                        'ref_point_1_roi_name',
-                        'ref_point_2_roi_name'
-                        ]
+        "path_to_dicom",
+        "tumour_roi_name",
+        "base_roi_name",
+        "ref_point_1_roi_name",
+        "ref_point_2_roi_name",
+    ]
     ## List with all the the *inputted* info bits:
     input_info = dicom_info.keys()
 
