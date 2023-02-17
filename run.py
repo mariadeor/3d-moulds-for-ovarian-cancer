@@ -34,6 +34,7 @@ from utils.import_functions import (
     build_parser,
     check_dicom_info,
     check_tunable_parameters,
+    create_dst_dir,
     import_yaml,
 )
 from utils.manipulate_dicom_functions import (
@@ -77,29 +78,8 @@ original_tumour_slices = get_dicom_slices_idx(tumour_mask)
 
 print(" OK")
 
-# Create path_to_results if it does not exist:
-path_to_results = args.results_path
-if not os.path.isdir(path_to_results):
-    print("Creating " + path_to_results)
-    os.mkdir(path_to_results)
-
-# Create path_to_results/mould_id subfolder:
-mould_id = args.mould_id
-dst_dir = os.path.join(path_to_results, mould_id)
-try:
-    os.mkdir(dst_dir)
-    print("Creating " + dst_dir)
-
-except FileExistsError:  # In case path_to_results/mould_id already exists, path_to_results/mould_id_Ymd_HMS is created with the system current date and time.
-    now = datetime.now()
-    date_time = now.strftime("%Y%m%d_%H%M%S")
-    mould_id = mould_id + "_" + date_time
-    new_dst_dir = os.path.join(path_to_results, mould_id)
-    print(
-        "WARNING: " + dst_dir + " already exists. Creating " + new_dst_dir + " instead."
-    )
-    dst_dir = new_dst_dir
-    os.mkdir(dst_dir)
+# Create folder to save the results:
+dst_dir = create_dst_dir(args)
 
 # Create path_to_results/mould_id/yaml_inputs subfolder and save copies of the yaml inputs used to generate the mould:
 print(

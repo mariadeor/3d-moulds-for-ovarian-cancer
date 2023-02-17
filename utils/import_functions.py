@@ -9,6 +9,7 @@
 #%% -----------------LIBRARIES--------------
 import argparse
 import os
+from datetime import datetime
 
 import yaml
 
@@ -193,3 +194,40 @@ def check_dicom_info(dicom_info):
     unrecognised_info = [info for info in input_info if info not in set(required_info)]
     if unrecognised_info:
         print("WARNING: DICOM information bit(s) " + " ".join(unrecognised_info) + " are unrecognised and will be ignored.")
+
+
+def create_dst_dir(args):
+    """
+    This function creates path_to_results if it does not exits and the corresponding subfolder to save the results.
+        INPUTS:
+            args <argparse.Namespace>:  Object that contains all the data in the parser.
+        
+        OUTPUTS:
+            dst_dir <str>:              Path to the subfolder where to store the results.
+    """
+    
+    path_to_results = args.results_path
+    # Create path_to_results if it does not exist:
+    if not os.path.isdir(path_to_results):
+        print("Creating " + path_to_results)
+        os.mkdir(path_to_results)
+
+    # Create path_to_results/mould_id subfolder:
+    mould_id = args.mould_id
+    dst_dir = os.path.join(path_to_results, mould_id)
+    try:
+        os.mkdir(dst_dir)
+        print("Creating " + dst_dir)
+
+    except FileExistsError:  # In case path_to_results/mould_id already exists, path_to_results/mould_id_Ymd_HMS is created with the system current date and time.
+        now = datetime.now()
+        date_time = now.strftime("%Y%m%d_%H%M%S")
+        mould_id = mould_id + "_" + date_time
+        new_dst_dir = os.path.join(path_to_results, mould_id)
+        print(
+            "WARNING: " + dst_dir + " already exists. Creating " + new_dst_dir + " instead."
+        )
+        dst_dir = new_dst_dir
+        os.mkdir(dst_dir)
+
+    return dst_dir
