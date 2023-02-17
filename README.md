@@ -35,7 +35,7 @@ All the results will be stored in a folder named *your-mould-id*:
 Optionally, the pre-processed tumour replica or intermediate SCAD files of the independent structures of the mould can be saved, as explained below (Usage, Flags). The filenames of these are self-explanatory.
 
 ## Usage
-To use the example case provided, please read [below](#markdown-header-example-case).
+To use the example case provided, please read [below](#example-case).
 
 ### Modify the input file
 Do not forget to update/create the input file **dicom\_info.yaml** so it contains the right path to the DICOM images and the segmented ROI names. Modify the other input file, **tunable\_parameters.yaml**, to fully customise your mould.
@@ -60,7 +60,7 @@ A string of your mould ID is the only required input (i.e. if happy with the def
 -  `--save_scad_intermediates ` If added, the code saves the scad files of each individual parts of the mould (i.e. the mould cavity, mould cavity + baseplate, slicing guide, orientation guides, and complete mould without slits).
 
 *****************************************************************************************************************************************************
-#### Example case
+#### Example case {#example-case}
 
 In the [example_case](data/example_case) folder, the DICOM-RT segmentations are provided to generate a mould for a case from [TCIA](https://www.cancerimagingarchive.net) (The Cancer Imaging Archive). 
 
