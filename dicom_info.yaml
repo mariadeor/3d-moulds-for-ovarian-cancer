@@ -9,7 +9,7 @@
 # Reference work: "Lesion-Specific 3D-Printed Moulds for Image-Guided Tissue Multi-Sampling of Ovarian Tumours: a prospective pilot study" (2022) by Delgado-Ortet*, Reinius* et al. (doi: 10.3389/fonc.2023.1085874)
 
 # PATH to folder containing both DICOM images and the DICOM-RT file:
-path_to_dicom: data/test_case
+path_to_dicom: data/example_case
 
 # DICOM-RT ROIs NAMES:
 tumour_roi_name: Tumour
