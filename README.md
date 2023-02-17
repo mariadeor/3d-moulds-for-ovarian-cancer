@@ -35,7 +35,7 @@ All the results will be stored in a folder named *your-mould-id*:
 Optionally, the pre-processed tumour replica or intermediate SCAD files of the independent structures of the mould can be saved, as explained below (Usage, Flags). The filenames of these are self-explanatory.
 
 ## Usage
-To use the example case provided, please read [below](#### Example-case).
+To use the example case provided, please read [below](#markdown-header-example-case).
 
 ### Modify the input file
 Do not forget to update/create the input file **dicom\_info.yaml** so it contains the right path to the DICOM images and the segmented ROI names. Modify the other input file, **tunable\_parameters.yaml**, to fully customise your mould.
@@ -64,7 +64,7 @@ A string of your mould ID is the only required input (i.e. if happy with the def
 
 In the [example_case](data/example_case) folder, the DICOM-RT segmentations are provided to generate a mould for a case from [TCIA](https://www.cancerimagingarchive.net) (The Cancer Imaging Archive). 
 
-To download images from TCIA, you need to download the app [NBIA Data Retriever](https://wiki.nci.nih.gov/display/NBIA). Once it is installed, double click on the manifesto in [data](data) and it should start downloading the CT scan used for this example case. Move the DICOM files to [example_case](data/example_case) together with the provided segmentation.
+To download images from TCIA, you need to download the app [NBIA Data Retriever](https://wiki.nci.nih.gov/display/NBIA). Once it is installed, double click on the manifesto in [data](data) and it should start downloading the CT scan used for this example case. Move **the DICOM files only** to [example_case](data/example_case) together with the provided segmentation.
 
 From the terminal, run:
 ```bash
