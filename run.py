@@ -12,6 +12,8 @@ import os
 import shutil
 from datetime import datetime
 
+import matplotlib as mpl
+mpl.use('tkagg')
 import matplotlib.pyplot as plt
 import numpy as np
 import pydicom
