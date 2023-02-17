@@ -10,6 +10,7 @@
 import argparse
 import os
 from datetime import datetime
+import shutil
 
 import yaml
 
@@ -196,24 +197,24 @@ def check_dicom_info(dicom_info):
         print("WARNING: DICOM information bit(s) " + " ".join(unrecognised_info) + " are unrecognised and will be ignored.")
 
 
-def create_dst_dir(args):
+def create_dst_dir(parser_args):
     """
     This function creates path_to_results if it does not exits and the corresponding subfolder to save the results.
         INPUTS:
-            args <argparse.Namespace>:  Object that contains all the data in the parser.
+            parser_args <argparse.Namespace>:  Object that contains all the data in the parser.
         
         OUTPUTS:
-            dst_dir <str>:              Path to the subfolder where to store the results.
+            dst_dir <str>:                     Path to the subfolder where to store the results.
     """
     
-    path_to_results = args.results_path
+    path_to_results = parser_args.results_path
     # Create path_to_results if it does not exist:
     if not os.path.isdir(path_to_results):
         print("Creating " + path_to_results)
         os.mkdir(path_to_results)
 
     # Create path_to_results/mould_id subfolder:
-    mould_id = args.mould_id
+    mould_id = parser_args.mould_id
     dst_dir = os.path.join(path_to_results, mould_id)
     try:
         os.mkdir(dst_dir)
@@ -231,3 +232,29 @@ def create_dst_dir(args):
         os.mkdir(dst_dir)
 
     return dst_dir
+
+
+def save_inputs(dst_dir, parser_args):
+    """
+    This function creates path_to_results/mould_id/yaml_inputs subfolder and saves copies of the yaml inputs used to generate the mould.
+        INPUTS:
+            dst_dir <str>:                      Path to the subfolder where to store the results.
+            parser_args <argparse.Namespace>:   Object that contains all the data in the parser.
+        
+        OUTPUTS:
+            
+    """
+    
+    print(
+        "Saving imported yaml files to " + os.path.join(dst_dir, "yaml_inputs") + "...",
+        end="",
+    )
+    os.mkdir(os.path.join(dst_dir, "yaml_inputs"))
+    shutil.copyfile(
+        parser_args.tunable_parameters,
+        os.path.join(dst_dir, "yaml_inputs", "tunable_parameters.yaml"),
+    )
+    shutil.copyfile(
+        parser_args.dicom_info, os.path.join(dst_dir, "yaml_inputs", "dicom_info.yaml")
+    )
+    print(" OK")

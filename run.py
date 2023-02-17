@@ -8,7 +8,6 @@
 #%% -----------------LIBRARIES--------------
 import math
 import os
-import shutil
 
 import matplotlib as mpl
 mpl.use('tkagg')
@@ -36,6 +35,7 @@ from utils.import_functions import (
     check_tunable_parameters,
     create_dst_dir,
     import_yaml,
+    save_inputs,
 )
 from utils.manipulate_dicom_functions import (
     get_box,
@@ -78,23 +78,8 @@ original_tumour_slices = get_dicom_slices_idx(tumour_mask)
 
 print(" OK")
 
-# Create folder to save the results:
-dst_dir = create_dst_dir(args)
-
-# Create path_to_results/mould_id/yaml_inputs subfolder and save copies of the yaml inputs used to generate the mould:
-print(
-    "Saving imported yaml files to " + os.path.join(dst_dir, "yaml_inputs") + "...",
-    end="",
-)
-os.mkdir(os.path.join(dst_dir, "yaml_inputs"))
-shutil.copyfile(
-    args.tunable_parameters,
-    os.path.join(dst_dir, "yaml_inputs", "tunable_parameters.yaml"),
-)
-shutil.copyfile(
-    args.dicom_info, os.path.join(dst_dir, "yaml_inputs", "dicom_info.yaml")
-)
-print(" OK")
+dst_dir = create_dst_dir(args)  # Create folder to save the results
+save_inputs(dst_dir, args)  # Save copies of the yaml inputs used to generate the mould
 
 print("Import complete.")
 
