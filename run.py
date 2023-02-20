@@ -44,6 +44,7 @@ from utils.manipulate_dicom_functions import (
     get_centroid,
     get_dicom_slices_idx,
     get_roi_masks,
+    rotate_label_mask,
 )
 from utils.mould_modelling_functions import get_xy_convex_hull_coords
 from utils.tumour_modelling_function import mesh_and_smooth
@@ -116,48 +117,13 @@ dx      = get_centroid(ref_point_1_mask)[1] - get_centroid(ref_point_2_mask)[1]
 dy      = get_centroid(ref_point_1_mask)[0] - get_centroid(ref_point_2_mask)[0]
 theta   = math.atan(dy / dx) * 180 / math.pi
 
-# Rotate each slice theta degrees:
-print(
-    "\t## Rotating the tumour VOI %f degrees on the DICOM axial plane..." % theta,
-    end="",
-)
-rois_combined_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
-for idx, z in enumerate(tumour_slices):
-    rois_combined_rotated[:, :, idx] = scipy.ndimage.rotate(
-        rois_combined[:, :, z], theta, reshape=False, order=0
-    )
-print(" OK")
-
-# In case the rotation resulted in the base being on top (i.e. the y
-# coordinate centroid of the base is greater than the one for the tumour),
-# let's add 180 degrees rotation extra:
-if (get_centroid(rois_combined_rotated, 1)[0] > get_centroid(rois_combined_rotated, 3)[0]):
-    print(
-        "\t## Rotating the the tumour VOI extra 180 degrees on the DICOM axial plane...",
-        end="",
-    )
-    for z in range(nbr_tumour_slices):
-        rois_combined_rotated[:, :, z] = scipy.ndimage.rotate(
-            rois_combined_rotated[:, :, z], 180, reshape=False, order=0
-        )
-    print(" OK")
+rois_combined_rotated = rotate_label_mask(rois_combined, tumour_slices, theta)
 
 if (
     args.display
 ):  # OPT: Add "--display" to the command line to display the rotated VOIs.
-    print("\t\tDisplaying rotated VOIs...")
-    for z in range(nbr_tumour_slices):
-        curr_rois_combined_slice = rois_combined_rotated[:, :, z]
-
-        plt.matshow(curr_rois_combined_slice)
-        plt.axis("off")
-        plt.title("Rotated VOIs")
-
-        plt.show(block=False)
-        plt.pause(0.001)
-    
-    input("INPUT REQUIRED! Please hit enter to close all figures and continue.")
-    plt.close('all')
+    print("\t\tDisplaying rotated VOIs... ", end="")
+    plot_slices(rois_combined_rotated, range(nbr_tumour_slices), "Rotated VOIs")
 
 # Keep only the tumour VOI:
 tumour_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])

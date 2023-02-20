@@ -190,3 +190,36 @@ def build_label_mask(*masks):
         label_mask[mask] = idx + 1
 
     return label_mask
+
+
+def rotate_label_mask(label_mask, slice_idx_list, theta):
+    nbr_tumour_slices = len(slice_idx_list)
+    scan_sz = np.shape(label_mask)
+    label_mask_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
+    
+    # Rotate each slice theta degrees:
+    print(
+        "\t## Rotating the tumour VOI %f degrees on the DICOM axial plane..." % theta,
+        end="",
+    )
+    for idx, z in enumerate(slice_idx_list):
+        label_mask_rotated[:, :, idx] = scipy.ndimage.rotate(
+            label_mask[:, :, z], theta, reshape=False, order=0
+        )
+    print(" OK")
+
+    # In case the rotation resulted in the base being on top (i.e. the y
+    # coordinate centroid of the base is greater than the one for the tumour),
+    # let's add 180 degrees rotation extra:
+    if (get_centroid(label_mask_rotated, 1)[0] > get_centroid(label_mask_rotated, 4)[0]):
+        print(
+            "\t## Rotating the the tumour VOI extra 180 degrees on the DICOM axial plane...",
+            end="",
+        )
+        for z in range(nbr_tumour_slices):
+            label_mask_rotated[:, :, z] = scipy.ndimage.rotate(
+                label_mask_rotated[:, :, z], 180, reshape=False, order=0
+            )
+        print(" OK")
+    
+    return label_mask_rotated
