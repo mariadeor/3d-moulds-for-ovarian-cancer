@@ -193,6 +193,17 @@ def build_label_mask(*masks):
 
 
 def rotate_label_mask(label_mask, slice_idx_list, theta):
+    """
+    This function rotates the label mask a number of theta degrees on the xy plane.
+    NB: Only the slices the indices of which are listed in slice_idx_list are rotated.
+        INPUTS:
+            label_mask <numpy.ndarray>:         Numeric label mask to rotate.
+            slice_idx_list <list of int>:       List with the indices of the slices to rotate.
+            theta <float>:                      Degrees to rotate the label_mask on the xy plane.
+        OUTPUTS:
+            label_mask_rotated <numpy.ndarray>: Rotated input label mask.
+    """
+
     nbr_tumour_slices = len(slice_idx_list)
     scan_sz = np.shape(label_mask)
     label_mask_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
@@ -221,5 +232,5 @@ def rotate_label_mask(label_mask, slice_idx_list, theta):
                 label_mask_rotated[:, :, z], 180, reshape=False, order=0
             )
         print(" OK")
-    
+
     return label_mask_rotated
