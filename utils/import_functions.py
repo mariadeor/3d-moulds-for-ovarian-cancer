@@ -197,7 +197,7 @@ def check_dicom_info(dicom_info):
         print("WARNING: DICOM information bit(s) " + " ".join(unrecognised_info) + " are unrecognised and will be ignored.")
 
 
-def create_dst_dir(parser_args):
+def create_dst_dir(parser_args, save_inputs=True):
     """
     This function creates path_to_results if it does not exits and the corresponding subfolder to save the results.
         INPUTS:
@@ -230,18 +230,18 @@ def create_dst_dir(parser_args):
         )
         dst_dir = new_dst_dir
         os.mkdir(dst_dir)
-
+    
+    if save_inputs:
+        save_input_yaml_files(dst_dir, parser_args)
     return dst_dir
 
 
-def save_inputs(dst_dir, parser_args):
+def save_input_yaml_files(dst_dir, parser_args):
     """
     This function creates path_to_results/mould_id/yaml_inputs subfolder and saves copies of the yaml inputs used to generate the mould.
         INPUTS:
             dst_dir <str>:                      Path to the subfolder where to store the results.
             parser_args <argparse.Namespace>:   Object that contains all the data in the parser.
-        
-        OUTPUTS:
             
     """
     

@@ -34,7 +34,6 @@ from utils.import_functions import (
     check_tunable_parameters,
     create_dst_dir,
     import_yaml,
-    save_inputs,
 )
 from utils.manipulate_dicom_functions import (
     get_box,
@@ -73,19 +72,16 @@ print("\t## Extracting VOIs...", end="")
 tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(
     dicom_info_dict
 )
-
-original_tumour_slices = get_dicom_slices_idx(tumour_mask)
-
 print(" OK")
 
-dst_dir = create_dst_dir(args)  # Create folder to save the results
-save_inputs(dst_dir, args)  # Save copies of the yaml inputs used to generate the mould
+dst_dir = create_dst_dir(args, save_inputs=True)  # Create folder to save the results and save copies of the yaml inputs used to generate the mould.
 
 print("Import complete.")
 
 #%% ----------------------------------------
 # 2. RE-SLICING
 # ------------------------------------------
+original_tumour_slices = get_dicom_slices_idx(tumour_mask)  # Used when printing the tumour slices outlines.
 print(
     "\n# ------------------------------------------ \n# 2. RE-SLICING \n# ------------------------------------------"
 )
