@@ -150,7 +150,7 @@ print("Transformation to WCS complete.")
 print(
     "\n# ------------------------------------------ \n# 5. TUMOUR MODELLING \n# ------------------------------------------"
 )
-tumour_replica_filename = os.path.join(dst_dir, "tumour_replica_" + mould_id + ".stl")
+tumour_replica_filename = os.path.join(dst_dir, "tumour_replica_" + args.mould_id + ".stl")
 tumour_replica_mesh = mesh_and_smooth(
     tumour_wcs, tumour_replica_filename, save_preproc=args.save_preproc
 )  # OPT: Add "--save_preproc" to the command line to save the stl of the preprocessed (prior to smoothing) mesh.
