@@ -201,7 +201,8 @@ def create_dst_dir(parser_args, save_inputs=True):
     """
     This function creates path_to_results if it does not exits and the corresponding subfolder to save the results.
         INPUTS:
-            parser_args <argparse.Namespace>:  Object that contains all the data in the parser.
+            parser_args <argparse.Namespace>:   Object that contains all the data in the parser.
+            save_inputs <bool>:                 Boolean to save input yaml files.
         
         OUTPUTS:
             dst_dir <str>:                     Path to the subfolder where to store the results.
