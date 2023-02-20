@@ -28,6 +28,9 @@ from solid import (
     translate,
 )
 
+from utils.display_functions import (
+    plot_slices,
+)
 from utils.import_functions import (
     build_parser,
     check_dicom_info,
@@ -36,6 +39,7 @@ from utils.import_functions import (
     import_yaml,
 )
 from utils.manipulate_dicom_functions import (
+    build_label_mask,
     get_box,
     get_centroid,
     get_dicom_slices_idx,
@@ -57,7 +61,6 @@ args = build_parser()
 print(
     "# ------------------------------------------ \n# 1. IMPORT INPUTS \n# ------------------------------------------"
 )
-
 print("\t## Importing " + args.tunable_parameters + "...", end="")
 globals().update(import_yaml(args.tunable_parameters, check_tunable_parameters))
 print(" OK")
@@ -70,6 +73,7 @@ print("\t## Extracting VOIs...", end="")
 tumour_mask, _, _, _ = get_roi_masks(
     dicom_info_dict
 )
+original_tumour_slices = get_dicom_slices_idx(tumour_mask)  # Used when printing the tumour slices outlines.
 print(" OK")
 
 dst_dir = create_dst_dir(args, save_inputs=True)  # Create folder to save the results and save copies of the yaml inputs used to generate the mould.
@@ -79,7 +83,6 @@ print("Import complete.")
 #%% ----------------------------------------
 # 2. RE-SLICING
 # ------------------------------------------
-original_tumour_slices = get_dicom_slices_idx(tumour_mask)  # Used when printing the tumour slices outlines.
 print(
     "\n# ------------------------------------------ \n# 2. RE-SLICING \n# ------------------------------------------"
 )
@@ -90,36 +93,20 @@ tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(
 #%% ----------------------------------------
 # 3. ROTATION
 # ------------------------------------------
-# Create a label mask with all the ROIs:
 scan_sz = np.shape(tumour_mask)
-rois_combined = np.zeros(scan_sz)
-rois_combined[base_mask] = 3
-rois_combined[ref_point_1_mask] = 2
-rois_combined[ref_point_2_mask] = 4
-rois_combined[tumour_mask] = 1
 
 # Find the slices where the tumour is segmented:
 tumour_slices = np.unique(np.argwhere(tumour_mask)[:, 2])
-nbr_tumour_slices = len(
-    tumour_slices
-)  # This line returns the number of slices that contain tumour segmentations.
+nbr_tumour_slices = len(tumour_slices)  # This line returns the number of slices that contain tumour segmentations.
+
+# Create a label mask with all the ROIs (mask:label –> tumour:1, ref_point_2: 2, ref_point_1: 3, base: 4):
+rois_combined = build_label_mask(tumour_mask, ref_point_1_mask, ref_point_2_mask, base_mask)
 
 if (
     args.display
 ):  # OPT: Add "--display" to the command line to display resliced rois_combined.
-    print("Displaying imported VOIs...")
-    for z in tumour_slices:  # z goes from caudal to cranial
-        curr_rois_combined_slice = rois_combined[:, :, z]
-
-        plt.matshow(curr_rois_combined_slice)
-        plt.axis("off")
-        plt.title("Imported and re-sliced VOIs")
-
-        plt.show(block=False)
-        plt.pause(0.001)
-
-    input("INPUT REQUIRED! Please hit enter to close all figures and continue.")
-    plt.close('all')
+    print("Displaying imported VOIs... ", end="")
+    plot_slices(rois_combined, tumour_slices, "Imported and re-sliced VOIs")
 
 print(
     "\n# ------------------------------------------ \n# 3. ROTATION \n# ------------------------------------------"
