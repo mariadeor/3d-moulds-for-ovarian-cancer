@@ -46,8 +46,8 @@ from utils.manipulate_dicom_functions import (
     rotate_label_mask,
 )
 from utils.mould_modelling_functions import (
-    get_spiky_tumour,
     get_xy_convex_hull_coords,
+    make_spiky_tumour,
 )
 from utils.tumour_modelling_function import mesh_and_smooth
 
@@ -170,8 +170,9 @@ print(
     "\t## Ensuring the mould base will not close after the slice with the largest area...",
     end="",
 )
-tumour_w_spikes_filename = make_spiky_tumour(tumour_wcs, args.mould_id)
-print(" OK")
+tumour_w_spikes = make_spiky_tumour(tumour_wcs)
+tumour_w_spikes_filename = os.path.join(dst_dir, "tumour_w_spikes_" + args.mould_id + ".stl")
+tumour_w_spikes_mesh = mesh_and_smooth(tumour_w_spikes, tumour_w_spikes_filename, save_preproc=False)
 
 # ------------------------------------------
 # Build the mould base

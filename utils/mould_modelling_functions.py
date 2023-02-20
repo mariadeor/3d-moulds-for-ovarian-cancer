@@ -8,6 +8,9 @@
 during the mould modelling step."""
 
 #%% -----------------LIBRARIES--------------
+import os
+
+import numpy as np
 from scipy.spatial import ConvexHull
 from skimage.draw import polygon2mask
 
@@ -31,7 +34,7 @@ def get_xy_convex_hull_coords(xy_coords):
     return xy_coords[xy_convex_hull_coords_idx]
 
 
-def make_spiky_tumour(tumour_wcs, mould_id):
+def make_spiky_tumour(tumour_wcs):
     # Find the slice with the maximum area:
     max_area = np.sum(tumour_wcs[:, :, 0])
     max_area_slice_idx = 0
@@ -56,8 +59,4 @@ def make_spiky_tumour(tumour_wcs, mould_id):
         tumour_w_spikes[:, :, z] = tumour_xy_convex_hull_mask
     print(" OK")
 
-    # Convert the "spiky" tumour to stl, postprocess and save:
-    tumour_w_spikes_filename = os.path.join(dst_dir, "tumour_w_spikes_" + mould_id + ".stl")
-    tumour_w_spikes_mesh = mesh_and_smooth(tumour_w_spikes, tumour_w_spikes_filename, save_preproc=False)
-    
-    return tumour_w_spikes_filename
+    return tumour_w_spikes
