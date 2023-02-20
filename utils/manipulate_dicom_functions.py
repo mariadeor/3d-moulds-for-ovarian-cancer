@@ -24,7 +24,7 @@ def get_roi_masks(dicom_info_dict, do_reslicing=False):
             dicom_info_dict <dict>: Dictionary of the DICOM information
                                     from the main function input yaml
                                     file.
-            do_reslicing <bool>:    Boolean flag to reslice the ROIs to 1x1x1 mm
+            do_reslicing <bool>:    Boolean flag to reslice the ROIs to (1, 1, 1) mm voxel size.
         OUTPUTS:
             roi_masks <numpy.ndarray>:  Boolean array of the ROIs.
     """
@@ -99,12 +99,13 @@ def get_centroid(mask, val=True):
     is a boolean array and looks for the centroid of the True pixels.
         INPUTS:
             mask <numpy.ndarray>:   Array.
-            val (optional): Value of the pixels to find the centroid of.
+            val (optional):         Value of the pixels to find the centroid of.
         OUTPUTS:
             y, x, z <float>: Centroid coordinates.
     """
 
     idx = np.where(mask == val)
+    
     return np.array([np.mean(idx[0]), np.mean(idx[1]), np.mean(idx[2])])
 
 
@@ -154,6 +155,7 @@ def get_dicom_voxel_size(path_to_dicom):
         OUTPUTS:
             x, y, z <float>:        Voxel size.
     """
+
     ds = pydicom.dcmread(
         os.path.join(path_to_dicom, os.listdir(path_to_dicom)[1])
     )  # Read DICOM metadata.
@@ -169,3 +171,22 @@ def get_dicom_voxel_size(path_to_dicom):
         z = ds.SliceThickness
     
     return x, y, z
+
+
+def build_label_mask(*masks):
+    """
+    This function combines different masks into a numeric label mask.
+    Each mask is labelled according to its position in the input list (starting from 1).
+    They are combined in reversed order, i.e. if some voxels have more than two labels, they will keep the lowest one.
+        INPUTS:
+            masks <numpy.ndarray>:      Boolean arrays to combine.
+        OUTPUTS:
+            label_mask <numpy.ndarray>: Numeric label mask as float array.
+    """
+
+    scan_sz = np.shape(masks[0])
+    label_mask = np.zeros(scan_sz)
+    for idx, mask in reversed(list(enumerate(masks))):
+        label_mask[mask] = idx + 1
+
+    return label_mask
