@@ -17,13 +17,14 @@ from rt_utils import RTStruct, RTStructBuilder
 
 
 #%% -----------------FUNCTIONS--------------
-def get_roi_masks(dicom_info_dict):
+def get_roi_masks(dicom_info_dict, do_reslicing=False):
     """
     This function returns DICOM ROIs as Numpy boolean arrays.
         INPUTS:
             dicom_info_dict <dict>: Dictionary of the DICOM information
                                     from the main function input yaml
                                     file.
+            do_reslicing <bool>:    Boolean flag to reslice the ROIs to 1x1x1 mm
         OUTPUTS:
             roi_masks <numpy.ndarray>:  Boolean array of the ROIs.
     """
@@ -55,6 +56,19 @@ def get_roi_masks(dicom_info_dict):
             rt_struct.get_roi_names(),
         )
         raise SystemExit(0)
+    
+    if do_reslicing:
+        print("\t## Re-slicing VOIs to voxel size (1, 1, 1) mm...", end="")
+        scale_x, scale_y, scale_z = get_dicom_voxel_size(path_to_dicom)
+
+        tumour_mask = reslice(tumour_mask, scale_x, scale_y, scale_z)
+        base_mask = reslice(base_mask, scale_x, scale_y, scale_z)
+        ref_point_1_mask = reslice(ref_point_1_mask, scale_x, scale_y, scale_z)
+        ref_point_2_mask = reslice(ref_point_2_mask, scale_x, scale_y, scale_z)
+        print(" OK")
+        print("\t\tOriginal voxel size: (%f, %f, %f) mm" % (scale_x, scale_y, scale_z))
+
+        print("Re-slicing complete.")
 
     return tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask
 
@@ -115,6 +129,7 @@ def get_box(mask):
 
     return rmin, rmax, cmin, cmax, zmin, zmax
 
+
 def get_dicom_slices_idx(mask):
     """
     This function returns the position of the DICOM slices where the input mask is.
@@ -129,6 +144,7 @@ def get_dicom_slices_idx(mask):
     dicom_slices = np.sort(dicom_slices)
     
     return dicom_slices
+
 
 def get_dicom_voxel_size(path_to_dicom):
     """

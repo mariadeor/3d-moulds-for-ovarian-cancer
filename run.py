@@ -39,9 +39,7 @@ from utils.manipulate_dicom_functions import (
     get_box,
     get_centroid,
     get_dicom_slices_idx,
-    get_dicom_voxel_size,
     get_roi_masks,
-    reslice,
 )
 from utils.mould_modelling_functions import get_xy_convex_hull_coords
 from utils.tumour_modelling_function import mesh_and_smooth
@@ -69,7 +67,7 @@ dicom_info_dict = import_yaml(args.dicom_info, check_dicom_info)
 print(" OK")
 
 print("\t## Extracting VOIs...", end="")
-tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(
+tumour_mask, _, _, _ = get_roi_masks(
     dicom_info_dict
 )
 print(" OK")
@@ -85,18 +83,9 @@ original_tumour_slices = get_dicom_slices_idx(tumour_mask)  # Used when printing
 print(
     "\n# ------------------------------------------ \n# 2. RE-SLICING \n# ------------------------------------------"
 )
-
-print("\t## Re-slicing VOIs to voxel size (1, 1, 1) mm...", end="")
-scale_x, scale_y, scale_z = get_dicom_voxel_size(dicom_info_dict["path_to_dicom"])
-
-tumour_mask = reslice(tumour_mask, scale_x, scale_y, scale_z)
-base_mask = reslice(base_mask, scale_x, scale_y, scale_z)
-ref_point_1_mask = reslice(ref_point_1_mask, scale_x, scale_y, scale_z)
-ref_point_2_mask = reslice(ref_point_2_mask, scale_x, scale_y, scale_z)
-print(" OK")
-print("\t\tOriginal voxel size: (%f, %f, %f) mm" % (scale_x, scale_y, scale_z))
-
-print("Re-slicing complete.")
+tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask = get_roi_masks(
+    dicom_info_dict, do_reslicing=True
+)
 
 #%% ----------------------------------------
 # 3. ROTATION
