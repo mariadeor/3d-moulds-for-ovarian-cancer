@@ -13,7 +13,6 @@ import matplotlib as mpl
 mpl.use('tkagg')
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.ndimage
 from matplotlib.colors import ListedColormap
 from skimage.draw import polygon2mask
 from solid import (
