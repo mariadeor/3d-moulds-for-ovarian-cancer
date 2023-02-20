@@ -234,3 +234,25 @@ def rotate_label_mask(label_mask, slice_idx_list, theta):
         print(" OK")
 
     return label_mask_rotated
+
+
+def crop_voi(label_mask, val):
+    """
+    This function crops the VOI of interest of a label mask.
+        INPUTS:
+            label_mask <numpy.ndarray>: Numeric label mask to rotate.
+            val <int>:                  Value of the VOI of interest in the label_mask.
+        OUTPUTS:
+            voi <numpy.ndarray>:        Boolean mask of the VOI of interest
+    """
+
+    # Create a boolean array with VOI of interest only:
+    label_mask_sz = np.shape(label_mask)
+    voi = np.zeros(label_mask_sz)
+    voi[label_mask == val] = 1
+
+    # Crop the VOI:
+    rmin, rmax, cmin, cmax, zmin, zmax = get_box(voi)
+    voi = voi[rmin : rmax + 1, cmin : cmax + 1, zmin : zmax + 1]
+
+    return voi

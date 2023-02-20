@@ -39,6 +39,7 @@ from utils.import_functions import (
 )
 from utils.manipulate_dicom_functions import (
     build_label_mask,
+    crop_voi,
     get_box,
     get_centroid,
     get_dicom_slices_idx,
@@ -99,7 +100,7 @@ scan_sz = np.shape(tumour_mask)
 tumour_slices = np.unique(np.argwhere(tumour_mask)[:, 2])
 nbr_tumour_slices = len(tumour_slices)  # This line returns the number of slices that contain tumour segmentations.
 
-# Create a label mask with all the ROIs (mask:label –> tumour:1, ref_point_2: 2, ref_point_1: 3, base: 4):
+# Create a label mask with all the ROIs (mask:label val –> tumour:1, ref_point_2: 2, ref_point_1: 3, base: 4):
 rois_combined = build_label_mask(tumour_mask, ref_point_1_mask, ref_point_2_mask, base_mask)
 
 if (
@@ -124,13 +125,8 @@ if (
     print("\t\tDisplaying rotated VOIs... ", end="")
     plot_slices(rois_combined_rotated, range(nbr_tumour_slices), "Rotated VOIs")
 
-# Keep only the tumour VOI:
-tumour_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
-tumour_rotated[rois_combined_rotated == 1] = 1
-
-# Crop the scan to the tumour VOI bounding box for increased computational speed:
-rmin, rmax, cmin, cmax, zmin, zmax = get_box(tumour_rotated)
-tumour_rotated = tumour_rotated[rmin : rmax + 1, cmin : cmax + 1, zmin : zmax + 1]
+# Keep only the tumour VOI and crop the scan to the tumour (label val = 1) VOI bounding box for increased computational speed:
+tumour_rotated = crop_voi(rois_combined_rotated, val=1)
 
 print("Rotation complete.")
 
