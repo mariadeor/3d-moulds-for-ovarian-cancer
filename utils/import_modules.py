@@ -13,7 +13,6 @@ import os
 import yaml
 
 from utils.dump_vars_modules import dump_vars_to_file
-from utils.export_modules import create_dst_dir
 
 
 #%% -----------------FUNCTIONS--------------
