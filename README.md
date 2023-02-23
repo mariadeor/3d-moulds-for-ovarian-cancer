@@ -66,7 +66,8 @@ A string of your mould ID is the only required input (i.e. if happy with the def
 In the [example_case](data/example_case) folder, the DICOM-RT segmentations are provided to generate a mould for a case from [TCIA](https://www.cancerimagingarchive.net) (The Cancer Imaging Archive). 
 
 ⚠️ ***Don't forget to download your images first!***
-To download images from TCIA, you need to download the app [NBIA Data Retriever](https://wiki.nci.nih.gov/display/NBIA). Once it is installed, double click on the manifesto in [data](data) and it should start downloading the CT scan used for this example case. Move <u>the DICOM files only</u> to [example_case](data/example_case) together with the provided segmentation.
+
+To download images from TCIA, you need to download the app [NBIA Data Retriever](https://wiki.nci.nih.gov/display/NBIA). Once it is installed, double click on the manifesto in [data](data) and it should start downloading the CT scan used for this example case. Move <ins>the DICOM files only</ins> to [example_case](data/example_case) together with the provided segmentation.
 
 From the terminal, run:
 ```bash
