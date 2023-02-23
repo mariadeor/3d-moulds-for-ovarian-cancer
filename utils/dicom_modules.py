@@ -96,6 +96,4 @@ def get_roi_masks(do_reslicing=False):
         print(" OK")
         print("\t\tOriginal voxel size: (%f, %f, %f) mm" % (scale_x, scale_y, scale_z))
 
-        print("Re-slicing complete.")
-
     return tumour_mask, base_mask, ref_point_1_mask, ref_point_2_mask
