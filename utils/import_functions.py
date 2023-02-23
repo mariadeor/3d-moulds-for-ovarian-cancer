@@ -14,6 +14,9 @@ import shutil
 
 import yaml
 
+from utils.write_config_functions import dump_vars_to_config
+
+from typing import TYPE_CHECKING
 
 #%% -----------------FUNCTIONS--------------
 def build_parser():
@@ -86,10 +89,6 @@ def import_yaml(path_to_file, check_func):
             check_func <function>:  Function to check that the variables
                                     defined in the file are the expected
                                     and suitable.
-
-        OUTPUTS:
-            yaml_dict <dict>:       Dictionary constructed from the input
-                                    yaml file.
     """
 
     with open(path_to_file) as yaml_file:
@@ -97,7 +96,7 @@ def import_yaml(path_to_file, check_func):
 
     check_func(yaml_dict)
 
-    return yaml_dict
+    dump_vars_to_config(yaml_dict)
 
 
 def check_tunable_parameters(tunable_parameters):
@@ -197,25 +196,22 @@ def check_dicom_info(dicom_info):
         print("WARNING: DICOM information bit(s) " + " ".join(unrecognised_info) + " are unrecognised and will be ignored.")
 
 
-def create_dst_dir(parser_args, save_inputs=True):
+def create_dst_dir(save_inputs=True):
     """
     This function creates path_to_results if it does not exits and the corresponding subfolder to save the results.
         INPUTS:
-            parser_args <argparse.Namespace>:   Object that contains all the data in the parser.
             save_inputs <bool>:                 Boolean to save input yaml files.
-        
-        OUTPUTS:
-            dst_dir <str>:                     Path to the subfolder where to store the results.
     """
     
-    path_to_results = parser_args.results_path
+    from config import results_path
+    path_to_results = results_path
     # Create path_to_results if it does not exist:
     if not os.path.isdir(path_to_results):
         print("Creating " + path_to_results)
         os.mkdir(path_to_results)
 
     # Create path_to_results/mould_id subfolder:
-    mould_id = parser_args.mould_id
+    from config import mould_id
     dst_dir = os.path.join(path_to_results, mould_id)
     try:
         os.mkdir(dst_dir)
@@ -233,11 +229,11 @@ def create_dst_dir(parser_args, save_inputs=True):
         os.mkdir(dst_dir)
     
     if save_inputs:
-        save_input_yaml_files(dst_dir, parser_args)
+        save_input_yaml_files(dst_dir)
     return dst_dir
 
 
-def save_input_yaml_files(dst_dir, parser_args):
+def save_input_yaml_files(dst_dir):
     """
     This function creates path_to_results/mould_id/yaml_inputs subfolder and saves copies of the yaml inputs used to generate the mould.
         INPUTS:
@@ -245,17 +241,17 @@ def save_input_yaml_files(dst_dir, parser_args):
             parser_args <argparse.Namespace>:   Object that contains all the data in the parser.
             
     """
-    
+    from config import tunable_parameters, dicom_info
     print(
         "Saving imported yaml files to " + os.path.join(dst_dir, "yaml_inputs") + "...",
         end="",
     )
     os.mkdir(os.path.join(dst_dir, "yaml_inputs"))
     shutil.copyfile(
-        parser_args.tunable_parameters,
+        tunable_parameters,
         os.path.join(dst_dir, "yaml_inputs", "tunable_parameters.yaml"),
     )
     shutil.copyfile(
-        parser_args.dicom_info, os.path.join(dst_dir, "yaml_inputs", "dicom_info.yaml")
+        dicom_info, os.path.join(dst_dir, "yaml_inputs", "dicom_info.yaml")
     )
     print(" OK")

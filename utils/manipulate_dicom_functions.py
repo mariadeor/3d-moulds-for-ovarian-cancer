@@ -15,21 +15,22 @@ import pydicom
 import scipy.ndimage
 from rt_utils import RTStruct, RTStructBuilder
 
+from utils.display_functions import (
+    plot_slices,
+)
+
 
 #%% -----------------FUNCTIONS--------------
-def get_roi_masks(dicom_info_dict, do_reslicing=False):
+def get_roi_masks(do_reslicing=False):
     """
     This function returns DICOM ROIs as Numpy boolean arrays.
         INPUTS:
-            dicom_info_dict <dict>: Dictionary of the DICOM information
-                                    from the main function input yaml
-                                    file.
             do_reslicing <bool>:    Boolean flag to reslice the ROIs to (1, 1, 1) mm voxel size.
         OUTPUTS:
             roi_masks <numpy.ndarray>:  Boolean array of the ROIs.
     """
+    from config import path_to_dicom, tumour_roi_name, base_roi_name, ref_point_1_roi_name, ref_point_2_roi_name
 
-    path_to_dicom = dicom_info_dict["path_to_dicom"]
     # Find the DICOM-RT
     for dcmfile in os.listdir(path_to_dicom):
         if not dcmfile.startswith("."):
@@ -45,10 +46,10 @@ def get_roi_masks(dicom_info_dict, do_reslicing=False):
                   rt_struct_path=rt_struct_path
                 )
     try:
-        tumour_mask          = rt_struct.get_roi_mask_by_name(dicom_info_dict["tumour_roi_name"])
-        base_mask            = rt_struct.get_roi_mask_by_name(dicom_info_dict["base_roi_name"])
-        ref_point_1_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict["ref_point_1_roi_name"])
-        ref_point_2_mask     = rt_struct.get_roi_mask_by_name(dicom_info_dict["ref_point_2_roi_name"])
+        tumour_mask          = rt_struct.get_roi_mask_by_name(tumour_roi_name)
+        base_mask            = rt_struct.get_roi_mask_by_name(base_roi_name)
+        ref_point_1_mask     = rt_struct.get_roi_mask_by_name(ref_point_1_roi_name)
+        ref_point_2_mask     = rt_struct.get_roi_mask_by_name(ref_point_2_roi_name)
     
     except RTStruct.ROIException:
         print(
@@ -183,28 +184,42 @@ def build_label_mask(*masks):
         OUTPUTS:
             label_mask <numpy.ndarray>: Numeric label mask as float array.
     """
-
+    from  config import display
+    
     scan_sz = np.shape(masks[0])
     label_mask = np.zeros(scan_sz)
     for idx, mask in reversed(list(enumerate(masks))):
         label_mask[mask] = idx + 1
+    
+    if display: # OPT: Add "--display" to the command line to display resliced rois_combined.
+        print("Displaying imported VOIs... ", end="")
+        plot_slices(rois_combined, tumour_slices, "Imported and re-sliced VOIs")
 
     return label_mask
 
 
-def rotate_label_mask(label_mask, slice_idx_list, theta):
+def rotate_label_mask(label_mask, theta, **kwargs):
     """
     This function rotates the label mask a number of theta degrees on the xy plane.
-    NB: Only the slices the indices of which are listed in slice_idx_list are rotated.
         INPUTS:
-            label_mask <numpy.ndarray>:         Numeric label mask to rotate.
-            slice_idx_list <list of int>:       List with the indices of the slices to rotate.
-            theta <float>:                      Degrees to rotate the label_mask on the xy plane.
+            label_mask <numpy.ndarray>: Numeric label mask to rotate.
+            theta <float>:              Degrees to rotate the label_mask on the xy plane.
+            slice_idx_to_rotate <list>: Optional input list with the slices to rotate.
+            crop_tumour <bool>:         Optional boolean input to crop the tumour. It assumes is labelled as 1.
         OUTPUTS:
             label_mask_rotated <numpy.ndarray>: Rotated input label mask.
     """
-
-    nbr_tumour_slices = len(slice_idx_list)
+    
+    if "slice_idx_to_rotate" in kwargs:
+        slice_idx_to_rotate = kwargs["slice_idx_to_rotate"]
+    else:
+        try:
+            from config import tumour_slices
+            slice_idx_to_rotate = tumour_slices
+        except ImportError:
+            slice_idx_to_rotate = list(range(np.shape(label_mask)[2]))
+    
+    nbr_tumour_slices = len(slice_idx_to_rotate)
     scan_sz = np.shape(label_mask)
     label_mask_rotated = np.zeros([scan_sz[0], scan_sz[1], nbr_tumour_slices])
     
@@ -213,7 +228,7 @@ def rotate_label_mask(label_mask, slice_idx_list, theta):
         "\t## Rotating the tumour VOI %f degrees on the DICOM axial plane..." % theta,
         end="",
     )
-    for idx, z in enumerate(slice_idx_list):
+    for idx, z in enumerate(slice_idx_to_rotate):
         label_mask_rotated[:, :, idx] = scipy.ndimage.rotate(
             label_mask[:, :, z], theta, reshape=False, order=0
         )
@@ -232,11 +247,24 @@ def rotate_label_mask(label_mask, slice_idx_list, theta):
                 label_mask_rotated[:, :, z], 180, reshape=False, order=0
             )
         print(" OK")
+    
+    from config import display
+    if display: # OPT: Add "--display" to the command line to display the rotated VOIs.
+        print("\t\tDisplaying rotated VOIs... ", end="")
+        plot_slices(rois_combined_rotated, range(nbr_tumour_slices), "Rotated VOIs")
+    
+    if "crop_tumour" in kwargs and kwargs["crop_tumour"]:
+        print(
+            "\t## Cropping the tumour bounding box...",
+            end="",
+        )
+        label_mask_rotated = crop_voi(label_mask_rotated)
+        print(" OK")
 
     return label_mask_rotated
 
 
-def crop_voi(label_mask, val):
+def crop_voi(label_mask, val=1):
     """
     This function crops the VOI of interest of a label mask.
         INPUTS:
