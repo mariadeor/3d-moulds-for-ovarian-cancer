@@ -113,7 +113,6 @@ def build_mould_cavity(tumour_wcs, tumour_replica_mesh):
 
     print(
         "\t## Ensuring the mould base will not close after the slice with the largest area...",
-        end="",
     )
     tumour_w_spikes = make_spiky_tumour(tumour_wcs)
     tumour_w_spikes_mesh = mesh_and_smooth(
@@ -147,7 +146,6 @@ def build_mould_cavity(tumour_wcs, tumour_replica_mesh):
 
     # Carve the tumour hull inside the base:
     scad_mould = scad_mould_cavity - scad_tumour_convex_hull
-    print(" OK")
 
     print("\t## Adding the baseplate to the the mould cavity...", end="")
     baseplate_xy_offset += cavity_wall_thickness
