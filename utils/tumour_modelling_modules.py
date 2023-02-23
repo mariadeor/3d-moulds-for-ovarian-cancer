@@ -16,7 +16,7 @@ from stl import mesh
 
 
 #%% -----------------FUNCTION--------------
-def mesh_and_smooth(mask, mesh_name):
+def mesh_and_smooth(mask, mesh_name, **kwargs):
     """
     This function extracts 3D surface mesh of the input mask volume
     using the Lorensen and Cline marching cubes algorithm. Next, the
@@ -31,7 +31,9 @@ def mesh_and_smooth(mask, mesh_name):
 
     from inputs import mould_id, save_preproc
     from outputs import dst_dir
-
+    if "save_preproc" in kwargs:
+        save_preproc = kwargs["save_preproc"]
+    
     stl_filename = os.path.join(dst_dir, mesh_name + "_" + mould_id + ".stl")
 
     # Surface meshing of the input mask
