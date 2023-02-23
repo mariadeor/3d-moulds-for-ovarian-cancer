@@ -10,7 +10,7 @@
 import numpy as np
 import scipy.ndimage
 
-from utils.display_functions import plot_scan_seg_slices
+from utils.display_modules import plot_scan_seg_slices
 
 
 #%% -----------------FUNCTIONS--------------
