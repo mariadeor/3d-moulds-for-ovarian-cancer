@@ -206,7 +206,7 @@ def build_orientation_guides(tumour_replica_mesh):
     scad_orguide_left = translate(
         [
             -(tumour_sz[0] / 2 + cavity_wall_thickness + baseplate_xy_offset + dist_orguide_baseplate + guides_thickness),
-            -(2 * guides_thickness) / 2,
+            -guides_thickness,
             baseplate_height,
         ]
     )(scad_orguide)
@@ -215,7 +215,7 @@ def build_orientation_guides(tumour_replica_mesh):
     scad_orguide_right = translate(
         [
             tumour_sz[0] / 2 + cavity_wall_thickness + baseplate_xy_offset + dist_orguide_baseplate,
-            -(2 * guides_thickness) / 2,
+            -guides_thickness,
             baseplate_height,
         ]
     )(scad_orguide)
@@ -438,7 +438,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
     scad_orientation_slit = translate(
         [
             -(2 * guides_thickness + 2 * baseplate_xy_offset + 2 * cavity_wall_thickness + tumour_sz[0] + 2 * dist_orguide_baseplate)/ 2,
-            -slice_thickness / 2,
+            -slit_thickness / 2,
             cavity_height - depth_orslit,
         ]
     )(scad_orientation_slit)
