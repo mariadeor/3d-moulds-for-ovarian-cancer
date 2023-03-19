@@ -304,7 +304,7 @@ def build_slicing_guide(tumour_replica_mesh):
     scad_slguide = translate(
         [
             -(tumour_sz[0] + 2 * cavity_wall_thickness) / 2,
-            (tumour_sz[1] + 2 * baseplate_xy_offset) / 2,
+            tumour_sz[1] / 2 + cavity_wall_thickness + baseplate_xy_offset,
             baseplate_height,
         ]
     )(scad_slguide)
@@ -314,7 +314,7 @@ def build_slicing_guide(tumour_replica_mesh):
     # Create the baseplate for the slicing guide:
     scad_slguide_baseplate = cube(
         [
-            tumour_sz[0] + 2 * baseplate_xy_offset + dist_orguide_baseplate * 2,  # It extends on the x axis to meet with the orientation guides baseplate.
+            tumour_sz[0] + 2 * cavity_wall_thickness + 2 * baseplate_xy_offset + 2 * dist_orguide_baseplate,  # It extends on the x axis to meet with the orientation guides baseplate.
             guides_thickness,
             baseplate_height,
         ]
@@ -323,8 +323,8 @@ def build_slicing_guide(tumour_replica_mesh):
     # Center the baseplate:
     scad_slguide_baseplate = translate(
         [
-            -(tumour_sz[0] + 2 * baseplate_xy_offset + dist_orguide_baseplate * 2) / 2,
-            (tumour_sz[1] + 2 * baseplate_xy_offset) / 2,
+            -(tumour_sz[0] + 2 * cavity_wall_thickness + 2 * baseplate_xy_offset + 2 * dist_orguide_baseplate) / 2,
+            tumour_sz[1] / 2 + cavity_wall_thickness + baseplate_xy_offset,
             0,
         ]
     )(scad_slguide_baseplate)
