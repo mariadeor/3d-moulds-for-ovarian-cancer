@@ -181,6 +181,7 @@ def build_orientation_guides(tumour_replica_mesh):
     from inputs import (
         baseplate_height,
         baseplate_xy_offset,
+        cavity_wall_thickness,
         dist_orguide_baseplate,
         guides_thickness,
         mould_id,
@@ -196,7 +197,7 @@ def build_orientation_guides(tumour_replica_mesh):
     scad_orguide = cube(
         [
             guides_thickness,
-            2 * guides_thickness,  # As it is only two "pillars", y = 2*guideSize.
+            2 * guides_thickness,  # As it is only two "pillars", y = 2*guide_thickness.
             guides_height,
         ]
     )
@@ -204,7 +205,7 @@ def build_orientation_guides(tumour_replica_mesh):
     # Place it on the left of the mould and add translate upwards as baseplate offset:
     scad_orguide_left = translate(
         [
-            -(tumour_sz[0] + 2 * baseplate_xy_offset) / 2 - baseplate_xy_offset - dist_orguide_baseplate,
+            -(tumour_sz[0] / 2 + cavity_wall_thickness + baseplate_xy_offset + dist_orguide_baseplate + guides_thickness),
             -(2 * guides_thickness) / 2,
             baseplate_height,
         ]
@@ -213,7 +214,7 @@ def build_orientation_guides(tumour_replica_mesh):
     # Place it also on the right of the mould and translate upwards as the baseplate offset:
     scad_orguide_right = translate(
         [
-            (tumour_sz[0] + 2 * baseplate_xy_offset) / 2 + dist_orguide_baseplate,
+            tumour_sz[0] / 2 + cavity_wall_thickness + baseplate_xy_offset + dist_orguide_baseplate,
             -(2 * guides_thickness) / 2,
             baseplate_height,
         ]
@@ -225,7 +226,7 @@ def build_orientation_guides(tumour_replica_mesh):
     scad_orguide_baseplate = cube(
         [
             guides_thickness,
-            tumour_sz[1] + 2 * baseplate_xy_offset + guides_thickness,  # It extends on the y axis to meet with the slicing guide baseplate.
+            tumour_sz[1] + 2 * (cavity_wall_thickness + baseplate_xy_offset) + guides_thickness,  # It extends on the y axis to meet with the slicing guide baseplate.
             baseplate_height,
         ]
     )
@@ -233,8 +234,8 @@ def build_orientation_guides(tumour_replica_mesh):
     # (A) Place the baseplate on the left orientation guide:
     scad_orguide_baseplate_left = translate(
         [
-            -(tumour_sz[0] + 2 * baseplate_xy_offset) / 2 - guides_thickness - dist_orguide_baseplate,
-            -(tumour_sz[1] + 2 * baseplate_xy_offset) / 2,
+            -(tumour_sz[0] / 2 + cavity_wall_thickness + baseplate_xy_offset + dist_orguide_baseplate + guides_thickness),
+            -(tumour_sz[1] + 2 * (cavity_wall_thickness + baseplate_xy_offset)) / 2,
             0,
         ]
     )(scad_orguide_baseplate)
@@ -245,8 +246,8 @@ def build_orientation_guides(tumour_replica_mesh):
     # (C) Place the baseplate on the right orientation guide:
     scad_orguide_baseplate_right = translate(
         [
-            (tumour_sz[0] + 2 * baseplate_xy_offset) / 2 + dist_orguide_baseplate,
-            -(tumour_sz[1] + 2 * baseplate_xy_offset) / 2,
+            (tumour_sz[0] / 2 + cavity_wall_thickness + baseplate_xy_offset + dist_orguide_baseplate),
+            -(tumour_sz[1] + 2 * (cavity_wall_thickness + baseplate_xy_offset)) / 2,
             0,
         ]
     )(scad_orguide_baseplate)
@@ -396,9 +397,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
     )(scad_slicing_slit)
     scad_mould -= scad_slicing_slit_central
 
-    slicing_slits_positions = [
-        0
-    ]  # Initialise a list to keep the slicing slits positions for the generation of the tumour outlines.
+    slicing_slits_positions = [0]  # Initialise a list to keep the slicing slits positions for the generation of the tumour outlines.
 
     # Make the rest of the cuts:
     nbr_cuts_each_half_x = math.floor(tumour_sz[0] / 2 / slice_thickness)
