@@ -428,7 +428,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
     # Create the slit structure for the orientation slit:
     scad_orientation_slit = cube(
         [
-            2 * guides_thickness + 2 * baseplate_xy_offset + tumour_sz[0] + 2 * dist_orguide_baseplate,
+            2 * guides_thickness + 2 * baseplate_xy_offset + 2 * cavity_wall_thickness + tumour_sz[0] + 2 * dist_orguide_baseplate,
             slit_thickness,
             guides_height,
         ]
@@ -437,7 +437,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
     # Center it and position to the approrpiate z height:
     scad_orientation_slit = translate(
         [
-            -(2 * guides_thickness + 2 * baseplate_xy_offset + tumour_sz[0] + 2 * dist_orguide_baseplate)/ 2,
+            -(2 * guides_thickness + 2 * baseplate_xy_offset + 2 * cavity_wall_thickness + tumour_sz[0] + 2 * dist_orguide_baseplate)/ 2,
             -slice_thickness / 2,
             cavity_height - depth_orslit,
         ]
