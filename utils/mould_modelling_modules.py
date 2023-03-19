@@ -365,6 +365,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
         baseplate_height,
         baseplate_xy_offset,
         cavity_height_pct,
+        cavity_wall_thickness,
         depth_orslit,
         dist_orguide_baseplate,
         guides_thickness,
@@ -382,7 +383,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
     scad_slicing_slit = cube(
         [
             slit_thickness,
-            guides_thickness + 2 * baseplate_xy_offset + tumour_sz[1],
+            guides_thickness + 2 * (cavity_wall_thickness + baseplate_xy_offset) + tumour_sz[1],
             guides_height,
         ]
     )
@@ -391,7 +392,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
     scad_slicing_slit_central = translate(
         [
             -slit_thickness / 2,
-            -(2 * baseplate_xy_offset + tumour_sz[1]) / 2,
+            -(2 * (cavity_wall_thickness + baseplate_xy_offset) + tumour_sz[1]) / 2,
             baseplate_height,
         ]
     )(scad_slicing_slit)
@@ -409,14 +410,14 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
         scad_mould -= translate(
             [
                 -slit_thickness / 2 + slit_x_position,  # Cuts on the left.
-                -(2 * baseplate_xy_offset + tumour_sz[1]) / 2,
+                -(2 * (cavity_wall_thickness + baseplate_xy_offset) + tumour_sz[1]) / 2,
                 baseplate_height,
             ]
         )(scad_slicing_slit)
         scad_mould -= translate(
             [
                 -slit_thickness / 2 - slit_x_position,  # Cuts on the right.
-                -(2 * baseplate_xy_offset + tumour_sz[1]) / 2,
+                -(2 * (cavity_wall_thickness + baseplate_xy_offset) + tumour_sz[1]) / 2,
                 baseplate_height,
             ]
         )(scad_slicing_slit)
