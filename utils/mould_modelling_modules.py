@@ -457,7 +457,7 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
         scad_char = translate(
             [
                 -start_pos + slice_thickness * nbr,
-                (tumour_sz[1] + 2 * baseplate_xy_offset) / 2 + guides_thickness / 2,
+                (tumour_sz[1] + 2 * baseplate_xy_offset + 2 * cavity_wall_thickness) / 2 + guides_thickness / 2,
                 guides_height + baseplate_height - character_depth,
             ]
         )(
@@ -472,9 +472,9 @@ def carve_slicing_slits(scad_mould, tumour_replica_mesh):
             )
         )
         scad_mould -= scad_char
-        print(" OK")
+    print(" OK")
 
-        return scad_mould, slicing_slits_positions
+    return scad_mould, slicing_slits_positions
 
 
 def get_xy_convex_hull_coords(xy_coords):
